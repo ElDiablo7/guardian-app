@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>GRACE-X Guardian App • Scanner</title>
+    <link rel="stylesheet" href="/assets/css/style.css" />
+</head>
+
+<body>
+    <div class="fx-bg fx-bg--hard"></div>
+
+    <header class="topbar">
+        <div class="brand">
+            <div class="mark mark--green"></div>
+            <div>
+                <h1>GUARDIAN SCANNER</h1>
+                <div class="sub">ACTIVE QUARANTINE • VENUS SANDBOX SECURED</div>
+            </div>
+        </div>
+        <div class="status">
+            <div class="pill sec"><strong>STATUS:</strong> ARMED</div>
+            <div class="pill live"><strong>SUBSCRIPTION:</strong> ACTIVE</div>
+            <a href="index.html" class="btn">Exit</a>
+        </div>
+    </header>
+
+    <main class="container">
+        <div class="card app-card">
+            <div class="card-head">
+                <h2>Threat Assessment Console</h2>
+            </div>
+            <p style="margin-bottom: 20px; color: var(--muted); font-size: 14px;">Paste suspicious text messages,
+                emails, or chat logs below. The AI will analyze the content for predatory grooming behavior, financial
+                phishing attempts, and malicious links without ever contacting the source server.</p>
+
+            <textarea id="scanInput" placeholder="[PASTE SUSPICIOUS TEXT OR LINKS HERE]
+
+Example 1: 'Hey kids, don't tell your parents we are talking...'
+Example 2: 'URGENT: Your bank account is locked. Click bit.ly/123 to verify...'"></textarea>
+
+            <div style="display: flex; gap: 12px; margin-bottom: 24px;">
+                <button class="btn primary" id="scanBtn">Run Guardian Analysis</button>
+                <button class="btn" id="clearBtn">Clear Sandbox</button>
+            </div>
+
+            <div id="results">
+                <h3
+                    style="color:var(--text); font-size:16px; margin:0 0 16px; text-transform:uppercase; letter-spacing: .1em;">
+                    Intelligence Report</h3>
+                <div id="threatLog"></div>
+                <div id="actionPlan" class="actions-box"></div>
+            </div>
+        </div>
+    </main>
+
+    <script src="/assets/js/scanner.js"></script>
+</body>
+
+</html>
