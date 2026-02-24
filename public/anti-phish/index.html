@@ -1,0 +1,366 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>GRACE-X Anti-Phish (Local Scanner)</title>
+    <style>
+        :root {
+            --bg0: #05070d;
+            --bg1: #070b16;
+            --text: #e7eefc;
+            --muted: #c1c8e4;
+            --cyan: #53e6ff;
+            --amber: #ffd27a;
+            --red: #ff4c4c;
+            --green: #48ffb0;
+            --card: rgba(11, 16, 34, .72);
+            --border: rgba(63, 93, 182, .40);
+            --mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+            --sans: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: var(--sans);
+            color: var(--text);
+            background: linear-gradient(180deg, var(--bg0), var(--bg1));
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .fx-bg {
+            position: fixed;
+            inset: 0;
+            pointer-events: none;
+            z-index: -1;
+            background: repeating-linear-gradient(180deg, rgba(83, 230, 255, .03) 0, rgba(83, 230, 255, .03) 1px, transparent 2px, transparent 10px);
+            transform: rotate(2deg) scale(1.1);
+            opacity: .25;
+        }
+
+        .container {
+            width: min(800px, 92vw);
+            margin-top: 40px;
+            margin-bottom: 40px;
+        }
+
+        .header {
+            border: 1px solid var(--border);
+            background: var(--card);
+            border-radius: 16px;
+            padding: 18px 24px;
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, .5);
+        }
+
+        .brand h1 {
+            margin: 0;
+            font-size: 16px;
+            letter-spacing: .15em;
+            text-transform: uppercase;
+            color: var(--cyan);
+        }
+
+        .brand p {
+            margin: 4px 0 0;
+            font-family: var(--mono);
+            font-size: 11px;
+            color: var(--muted);
+            letter-spacing: .08em;
+        }
+
+        .status-pill {
+            font-family: var(--mono);
+            font-size: 11px;
+            padding: 6px 12px;
+            border-radius: 999px;
+            border: 1px solid rgba(83, 230, 255, .4);
+            background: rgba(11, 16, 34, .55);
+            color: var(--cyan);
+            letter-spacing: .05em;
+        }
+
+        .card {
+            border: 1px solid var(--border);
+            background: var(--card);
+            border-radius: 16px;
+            padding: 24px;
+            margin-bottom: 20px;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, .4);
+        }
+
+        .card h2 {
+            margin: 0 0 16px;
+            font-size: 18px;
+            letter-spacing: .08em;
+            text-transform: uppercase;
+            color: var(--amber);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .card p {
+            margin: 0 0 16px;
+            color: var(--muted);
+            font-size: 14px;
+            line-height: 1.6;
+        }
+
+        textarea {
+            width: 100%;
+            height: 120px;
+            background: rgba(5, 7, 13, .6);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 14px;
+            color: var(--text);
+            font-family: var(--mono);
+            font-size: 13px;
+            resize: vertical;
+            margin-bottom: 16px;
+            box-sizing: border-box;
+        }
+
+        textarea:focus {
+            outline: none;
+            border-color: var(--cyan);
+            box-shadow: 0 0 0 1px var(--cyan);
+        }
+
+        .btn {
+            appearance: none;
+            border: 1px solid rgba(83, 230, 255, .5);
+            background: rgba(83, 230, 255, .1);
+            color: var(--cyan);
+            border-radius: 8px;
+            padding: 10px 18px;
+            font-family: var(--mono);
+            font-size: 13px;
+            letter-spacing: .05em;
+            cursor: pointer;
+            transition: all .2s;
+        }
+
+        .btn:hover {
+            background: rgba(83, 230, 255, .2);
+            border-color: var(--cyan);
+        }
+
+        #results {
+            display: none;
+            margin-top: 24px;
+            padding-top: 24px;
+            border-top: 1px solid var(--border);
+        }
+
+        .threat-item {
+            padding: 12px 16px;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            font-size: 14px;
+            font-family: var(--mono);
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+        }
+
+        .threat-high {
+            background: rgba(255, 76, 76, .1);
+            border: 1px solid rgba(255, 76, 76, .3);
+            color: #ff8888;
+        }
+
+        .threat-warn {
+            background: rgba(255, 210, 122, .1);
+            border: 1px solid rgba(255, 210, 122, .3);
+            color: var(--amber);
+        }
+
+        .threat-safe {
+            background: rgba(72, 255, 176, .1);
+            border: 1px solid rgba(72, 255, 176, .3);
+            color: var(--green);
+        }
+
+        .actions-box {
+            margin-top: 16px;
+            padding: 16px;
+            background: rgba(5, 7, 13, .6);
+            border-radius: 8px;
+            border: 1px dashed var(--border);
+        }
+
+        .actions-box h4 {
+            margin: 0 0 10px;
+            color: var(--cyan);
+            font-family: var(--mono);
+            text-transform: uppercase;
+            font-size: 12px;
+        }
+
+        .actions-box ul {
+            margin: 0;
+            padding-left: 20px;
+            color: var(--muted);
+            font-size: 14px;
+        }
+
+        .actions-box li {
+            margin-bottom: 6px;
+        }
+
+        .actions-box a {
+            color: var(--cyan);
+            text-decoration: none;
+        }
+
+        .actions-box a:hover {
+            text-decoration: underline;
+        }
+
+        .disclaimer {
+            font-family: var(--mono);
+            font-size: 11px;
+            color: rgba(255, 255, 255, .3);
+            text-align: center;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="fx-bg"></div>
+
+    <div class="container">
+        <div class="header">
+            <div class="brand">
+                <h1>TITAN / VENUS local sandbox</h1>
+                <p>DEFENSIVE THREAT ASSESSMENT • LOCAL INSTANCE</p>
+            </div>
+            <div class="status-pill">OFFLINE MODE SCANNING</div>
+        </div>
+
+        <div class="card">
+            <h2><span
+                    style="display:inline-block; width:12px; height:12px; background:var(--amber); border-radius:50%; box-shadow:0 0 10px var(--amber);"></span>
+                suspicious message / link scanner</h2>
+            <p>Paste the raw text of the phishing message, email, or URL you received. This tool will analyze it locally
+                without making network requests to the malicious server.</p>
+
+            <textarea id="scanInput" placeholder="Paste suspicious text or links here..."></textarea>
+
+            <button class="btn" id="scanBtn">Execute TITAN Assessment</button>
+
+            <div id="results">
+                <h3 style="color:var(--text); font-size:16px; margin:0 0 16px; text-transform:uppercase;">Assessment
+                    Report</h3>
+                <div id="threatLog"></div>
+                <div id="actionPlan" class="actions-box"></div>
+            </div>
+        </div>
+
+        <div class="disclaimer">
+            White-Hat Diagnostic Tool • No Offensive Capabilities • GRACE-X AI
+        </div>
+    </div>
+
+    <script>
+        document.getElementById('scanBtn').addEventListener('click', function () {
+            const input = document.getElementById('scanInput').value;
+            const resultsDiv = document.getElementById('results');
+            const threatLog = document.getElementById('threatLog');
+            const actionPlan = document.getElementById('actionPlan');
+
+            if (!input.trim()) return;
+
+            resultsDiv.style.display = 'block';
+            threatLog.innerHTML = '';
+            actionPlan.innerHTML = '';
+
+            let risks = [];
+            let actions = [];
+            let foundUrl = false;
+            let domains = [];
+
+            // Basic URL Extraction
+            const urlRegex = /(https?:\/\/[^\s]+)|(www\.[^\s]+)/g;
+            const urls = input.match(urlRegex);
+
+            if (urls && urls.length > 0) {
+                foundUrl = true;
+                urls.forEach(u => {
+                    try {
+                        let urlObj = new URL(u.startsWith('http') ? u : 'https://' + u);
+                        domains.push(urlObj.hostname);
+                        risks.push({
+                            level: 'high',
+                            msg: `URL Detected: ${u}`
+                        });
+
+                        // Check for common phishing URL indicators
+                        if (urlObj.hostname.includes('-') && urlObj.hostname.split('.').length > 2) {
+                            risks.push({ level: 'warn', msg: `Suspicious subdomain pattern detected in: ${urlObj.hostname}` });
+                        }
+                        if (['bit.ly', 'tinyurl.com', 't.co', 'ow.ly'].includes(urlObj.hostname)) {
+                            risks.push({ level: 'high', msg: `URL shortener used: hides the true destination server.` });
+                        }
+                    } catch (e) {
+                        risks.push({ level: 'warn', msg: `Malformed URL detected (potential obfuscation attempt)` });
+                    }
+                });
+            } else {
+                risks.push({ level: 'safe', msg: `No direct hyperlinks detected in text.` });
+            }
+
+            // Check text for urgency/phishing markers (NLP/Pattern matching)
+            const textLower = input.toLowerCase();
+            const urgencyWords = ['urgent', 'immediate', 'action required', 'suspend', 'verify', 'account closure', 'unauthorized', 'login now'];
+            const financialWords = ['invoice', 'payment', 'crypto', 'wallet', 'refund', 'bank'];
+
+            if (urgencyWords.some(w => textLower.includes(w))) {
+                risks.push({ level: 'warn', msg: `Social Engineering: Text contains urgency tactics designed to bypass critical thinking.` });
+            }
+
+            if (financialWords.some(w => textLower.includes(w)) && foundUrl) {
+                risks.push({ level: 'high', msg: `Financial Phishing Risk: Message combines financial keywords with a clickable link.` });
+            }
+
+            // Render Risks
+            if (risks.length === 0) risks.push({ level: 'safe', msg: `No immediate patterns of known phishing signatures detected. Still proceed with caution.` });
+
+            risks.forEach(r => {
+                let div = document.createElement('div');
+                div.className = `threat-item threat-${r.level}`;
+                div.innerHTML = `<strong>[${r.level.toUpperCase()}]</strong> ${r.msg}`;
+                threatLog.appendChild(div);
+            });
+
+            // Render Action Plan
+            let planHTML = `<h4>TITAN Recommended Actions</h4><ul>`;
+            if (foundUrl) {
+                planHTML += `<li><strong>DO NOT CLICK</strong> any links provided in the message.</li>`;
+                // Generate safe viewing links (OSINT)
+                domains.forEach(d => {
+                    planHTML += `<li>Safe WHOIS Lookup (OSINT): <a href="https://whois.domaintools.com/${d}" target="_blank">Analyze ${d}</a></li>`;
+                    planHTML += `<li>Safe VirusTotal Scan (OSINT): <a href="https://www.virustotal.com/gui/domain/${d}" target="_blank">Scan ${d}</a></li>`;
+                });
+            }
+            planHTML += `<li><strong>Block the sender</strong> immediately.</li>`;
+            planHTML += `<li>If this claims to be from a service you use, navigate to the service directly via your normal browser bookmarks or a web search, not via the provided link.</li>`;
+            planHTML += `</ul>`;
+
+            actionPlan.innerHTML = planHTML;
+        });
+    </script>
+</body>
+
+</html>

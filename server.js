@@ -52,7 +52,6 @@ app.use((req, res, next) => {
 
 // Load static assets
 app.use(express.static(path.join(__dirname, 'public')));
-app.use('/anti-phish', express.static(path.join(__dirname, '../anti-phish')));
 
 // The TITAN & Guardian Analysis Endpoint
 app.post('/api/scan', requireAuth, (req, res) => {
