@@ -11,6 +11,7 @@ const app = express();
 const PORT = process.env.PORT || 3000;
 
 // ── Security & Middleware ──
+app.set('trust proxy', 1);
 app.use(helmet({
     contentSecurityPolicy: false,
     crossOriginEmbedderPolicy: false,
@@ -31,7 +32,7 @@ app.use(session({
     cookie: {
         httpOnly: true,
         secure: process.env.NODE_ENV === 'production',
-        sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
+        sameSite: 'lax',
         maxAge: 24 * 60 * 60 * 1000
     }
 }));
@@ -142,14 +143,20 @@ app.post('/api/login', (req, res) => {
         req.session.tier = keyData.tier;
         req.session.keyId = uppercaseKey.substring(0, 3) + '***';
         const tierInfo = TIERS[keyData.tier] || {};
-        return res.json({
-            success: true,
-            message: "Access Granted",
-            tier: keyData.tier,
-            tierName: tierInfo.name,
-            tierLevel: tierInfo.level,
-            features: tierInfo.features,
-            redirect: `/dashboard-${keyData.tier}.html`
+        return req.session.save((err) => {
+            if (err) {
+                console.error('Session save error:', err);
+                return res.status(500).json({ success: false, error: "Session error. Please try again." });
+            }
+            res.json({
+                success: true,
+                message: "Access Granted",
+                tier: keyData.tier,
+                tierName: tierInfo.name,
+                tierLevel: tierInfo.level,
+                features: tierInfo.features,
+                redirect: `/dashboard-${keyData.tier}.html`
+            });
         });
     }
 
@@ -433,4 +440,6 @@ app.get('*', (req, res) => {
 app.listen(PORT, () => {
     console.log(`GRACE-X Guardian Backend Live on Port ${PORT}`);
     console.log(`Keys loaded: ${Object.keys(validKeys).length} key(s) configured`);
+    Object.entries(validKeys).forEach(([k, v]) => console.log(`  → ${k.substring(0, 4)}*** = ${v.tier}`));
+    console.log(`Trust proxy: enabled | sameSite: lax | secure: ${process.env.NODE_ENV === 'production'}`);
 });

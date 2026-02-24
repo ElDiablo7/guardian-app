@@ -15,7 +15,7 @@
         // Legacy app.html — redirect to correct tier dashboard via server session
         (async () => {
             try {
-                const res = await fetch('/api/session');
+                const res = await fetch('/api/session', { credentials: 'include' });
                 const data = await res.json();
                 if (data.authenticated && data.tier) {
                     window.location.href = '/dashboard-' + data.tier + '.html';

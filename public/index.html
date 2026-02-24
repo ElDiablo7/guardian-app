@@ -350,7 +350,8 @@
                 const res = await fetch('/api/login', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ key })
+                    body: JSON.stringify({ key }),
+                    credentials: 'include'
                 });
                 const data = await res.json();
                 if (res.ok && data.success) {

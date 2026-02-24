@@ -34,7 +34,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const logoutBtn = document.getElementById('logoutBtn');
     if (logoutBtn) {
         logoutBtn.addEventListener('click', async () => {
-            try { await fetch('/api/logout', { method: 'POST' }); } catch (e) { }
+            try { await fetch('/api/logout', { method: 'POST', credentials: 'include' }); } catch (e) { }
             sessionStorage.clear();
             window.location.href = '/';
         });
@@ -79,7 +79,8 @@ document.addEventListener("DOMContentLoaded", () => {
                 const response = await fetch('/api/scan', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ text })
+                    body: JSON.stringify({ text }),
+                    credentials: 'include'
                 });
                 const data = await response.json();
                 if (!response.ok) throw new Error(data.error || 'API Error');
@@ -206,7 +207,8 @@ document.addEventListener("DOMContentLoaded", () => {
                 const res = await fetch('/api/password-check', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ password })
+                    body: JSON.stringify({ password }),
+                    credentials: 'include'
                 });
                 const data = await res.json();
                 if (!res.ok) throw new Error(data.error);
@@ -259,7 +261,8 @@ document.addEventListener("DOMContentLoaded", () => {
                 const res = await fetch('/api/check-breach', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ email })
+                    body: JSON.stringify({ email }),
+                    credentials: 'include'
                 });
                 const data = await res.json();
                 if (!res.ok) throw new Error(data.error);
@@ -312,7 +315,8 @@ document.addEventListener("DOMContentLoaded", () => {
                 const res = await fetch('/api/footprint', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ query })
+                    body: JSON.stringify({ query }),
+                    credentials: 'include'
                 });
                 const data = await res.json();
                 if (!res.ok) throw new Error(data.error);
@@ -386,7 +390,8 @@ document.addEventListener("DOMContentLoaded", () => {
                 const res = await fetch('/api/security-score', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ answers })
+                    body: JSON.stringify({ answers }),
+                    credentials: 'include'
                 });
                 const data = await res.json();
                 if (!res.ok) throw new Error(data.error);
@@ -485,7 +490,8 @@ document.addEventListener("DOMContentLoaded", () => {
                     const res = await fetch('/api/scan', {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ text: lines[i] })
+                        body: JSON.stringify({ text: lines[i] }),
+                        credentials: 'include'
                     });
                     const data = await res.json();
                     if (!res.ok) throw new Error(data.error);

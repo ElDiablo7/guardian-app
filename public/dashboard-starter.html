@@ -15,7 +15,7 @@
         // Verify session
         (async () => {
             try {
-                const res = await fetch('/api/session');
+                const res = await fetch('/api/session', { credentials: 'include' });
                 const data = await res.json();
                 if (!data.authenticated) {
                     window.location.href = '/';
