@@ -46,26 +46,55 @@ const TIERS = {
 };
 
 // ── Load Keys Securely ──
-// In production: use GUARDIAN_KEYS env var (JSON string)
-// In development: fall back to keys.json (which is gitignored)
+// Supports 3 methods (checked in order):
+//   1. Individual env vars: KEY_EARLYBIRD26=starter, KEY_GX_SH_SHIELD01=shield, etc.
+//   2. Single JSON env var: GUARDIAN_KEYS='{"EARLYBIRD26":{"tier":"starter"}}'
+//   3. Local keys.json file (dev only, gitignored)
 function loadKeys() {
+    const keys = {};
+
+    // Method 1: Individual KEY_* env vars (simplest for Render)
+    // Format: KEY_MYKEY=tier  e.g. KEY_EARLYBIRD26=starter
+    // For keys with hyphens, replace - with _ in the env var name
+    // e.g. GX-SH-SHIELD01 → KEY_GX_SH_SHIELD01=shield
+    let foundIndividual = false;
+    for (const [envName, envValue] of Object.entries(process.env)) {
+        if (envName.startsWith('KEY_') && envValue) {
+            // Convert env var name back to key: KEY_GX_SH_SHIELD01 → GX-SH-SHIELD01
+            const keyName = envName.substring(4).replace(/_/g, '-');
+            keys[keyName] = { tier: envValue.toLowerCase().trim(), created: 'env' };
+            foundIndividual = true;
+        }
+    }
+    if (foundIndividual) {
+        console.log(`Loaded ${Object.keys(keys).length} key(s) from individual env vars`);
+        return keys;
+    }
+
+    // Method 2: Single JSON env var
     if (process.env.GUARDIAN_KEYS) {
         try {
-            return JSON.parse(process.env.GUARDIAN_KEYS);
+            const parsed = JSON.parse(process.env.GUARDIAN_KEYS);
+            console.log(`Loaded ${Object.keys(parsed).length} key(s) from GUARDIAN_KEYS env var`);
+            return parsed;
         } catch (e) {
             console.error('Failed to parse GUARDIAN_KEYS env var:', e.message);
         }
     }
+
+    // Method 3: Local keys.json (dev only)
     const keysFile = path.join(__dirname, 'keys.json');
     if (fs.existsSync(keysFile)) {
         try {
-            console.log('[DEV] Loading keys from local keys.json (this file should never be committed)');
-            return JSON.parse(fs.readFileSync(keysFile, 'utf8'));
+            const parsed = JSON.parse(fs.readFileSync(keysFile, 'utf8'));
+            console.log(`[DEV] Loaded ${Object.keys(parsed).length} key(s) from local keys.json`);
+            return parsed;
         } catch (e) {
             console.error('Failed to parse keys.json:', e.message);
         }
     }
-    console.warn('No keys configured. Set GUARDIAN_KEYS environment variable.');
+
+    console.warn('No keys configured. Add KEY_* env vars or set GUARDIAN_KEYS.');
     return {};
 }
 
