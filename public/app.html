@@ -4,100 +4,37 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width,initial-scale=1" />
-    <title>GRACE-X Guardian App • Scanner</title>
+    <title>GRACE-X Guardian • Security Dashboard</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap"
+        rel="stylesheet">
     <link rel="stylesheet" href="assets/css/style.css" />
     <script>
-        const tier = sessionStorage.getItem('guardian_tier');
-        if (!tier) {
-            window.location.href = 'index.html';
-        }
+        // Legacy app.html — redirect to correct tier dashboard via server session
+        (async () => {
+            try {
+                const res = await fetch('/api/session');
+                const data = await res.json();
+                if (data.authenticated && data.tier) {
+                    window.location.href = '/dashboard-' + data.tier + '.html';
+                } else {
+                    window.location.href = '/';
+                }
+            } catch (e) {
+                window.location.href = '/';
+            }
+        })();
     </script>
 </head>
 
 <body>
     <div class="fx-bg fx-bg--hard"></div>
-
-    <header class="topbar">
-        <div class="brand">
-            <div class="mark mark--green"></div>
-            <div>
-                <h1>GUARDIAN SCANNER</h1>
-                <div class="sub">ACTIVE QUARANTINE • VENUS SANDBOX SECURED</div>
-            </div>
-        </div>
-        <div class="status">
-            <button class="btn info" id="startTourBtn" style="font-weight: bold;">? Help Tour</button>
-            <div class="pill sec"><strong>STATUS:</strong> ARMED</div>
-            <div class="pill live"><strong id="tierDisplay">TIER:</strong> <span id="tierBadge">ACTIVE</span></div>
-            <button class="btn" id="logoutBtn">Log Out</button>
-        </div>
-    </header>
-
-    <main class="container">
-
-        <div class="grid two-col" style="margin-bottom: 24px;">
-            <div class="card app-card" style="margin: 0;">
-                <div class="card-head">
-                    <h2>Data Breach Checker</h2>
-                </div>
-                <p style="margin-bottom: 20px; color: var(--muted); font-size: 14px;">Check if your email address has
-                    appeared in known public data breaches.</p>
-                <div style="display: flex; gap: 8px;">
-                    <input type="email" id="breachEmail" placeholder="Enter email address..."
-                        style="flex: 1; padding: 10px; background: rgba(5,7,13,0.6); border: 1px solid var(--border); color: white; border-radius: 6px;">
-                    <button class="btn primary" id="checkBreachBtn">Scan Deep Web</button>
-                </div>
-                <div id="breachResults" style="margin-top: 16px; display: none;"></div>
-            </div>
-
-            <div class="card app-card" style="margin: 0;">
-                <div class="card-head">
-                    <h2>Scan History</h2>
-                </div>
-                <p style="margin-bottom: 20px; color: var(--muted); font-size: 14px;">Review your previously assessed
-                    messages and their threat levels.</p>
-                <div id="historyList" style="max-height: 120px; overflow-y: auto; padding-right: 8px;">
-                    <div style="color: rgba(255,255,255,0.3); font-size: 12px; text-align: center; margin-top: 20px;">No
-                        scan history found.</div>
-                </div>
-                <div style="margin-top: 16px; text-align: right;">
-                    <button class="btn" id="clearHistoryBtn" style="font-size: 11px;">Clear History</button>
-                </div>
-            </div>
-        </div>
-
-        <div class="card app-card">
-            <div class="card-head">
-                <h2>Threat Assessment Console</h2>
-            </div>
-            <p style="margin-bottom: 20px; color: var(--muted); font-size: 14px;">Paste suspicious text messages,
-                emails, or chat logs below. The AI will analyze the content for predatory grooming behavior, financial
-                phishing attempts, and malicious links without ever contacting the source server.</p>
-
-            <textarea id="scanInput" placeholder="[PASTE SUSPICIOUS TEXT OR LINKS HERE]
-
-Example 1: 'Hey kids, don't tell your parents we are talking...'
-Example 2: 'URGENT: Your bank account is locked. Click bit.ly/123 to verify...'"></textarea>
-
-            <div style="display: flex; gap: 12px; margin-bottom: 24px;">
-                <button class="btn primary" id="scanBtn">Run Guardian Analysis</button>
-                <button class="btn" id="clearBtn">Clear Sandbox</button>
-                <button class="btn info" id="downloadReportBtn" style="display: none;">Download TXT Report</button>
-                <a href="../../anti-phish/index.html" class="btn warning" target="_blank"
-                    style="margin-left: auto;">Open Offline Scanner</a>
-            </div>
-
-            <div id="results" style="display: none;">
-                <h3
-                    style="color:var(--text); font-size:16px; margin:0 0 16px; text-transform:uppercase; letter-spacing: .1em;">
-                    Intelligence Report</h3>
-                <div id="threatLog"></div>
-                <div id="actionPlan" class="actions-box"></div>
-            </div>
-        </div>
-    </main>
-
-    <script src="assets/js/scanner.js"></script>
+    <div
+        style="display: flex; align-items: center; justify-content: center; min-height: 100vh; color: rgba(255,255,255,.3); font-family: var(--mono); font-size: 13px;">
+        Redirecting to your dashboard...
+    </div>
 </body>
 
 </html>

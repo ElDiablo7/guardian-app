@@ -4,195 +4,378 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width,initial-scale=1" />
-    <title>GRACE-X Guardian • Family Safety & Anti-Phishing</title>
+    <title>GRACE-X Guardian • Cyber Security for Everyone</title>
+    <meta name="description"
+        content="Military-grade threat scanning, child safety monitoring, and data breach detection — accessible to everyone from £2/month." />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap"
+        rel="stylesheet">
     <link rel="stylesheet" href="assets/css/style.css" />
 </head>
 
 <body>
     <div class="fx-bg"></div>
+    <div class="glow-orb glow-orb--1"></div>
+    <div class="glow-orb glow-orb--2"></div>
 
+    <!-- ── TOPBAR ── -->
     <header class="topbar">
         <div class="brand">
-            <div class="mark mark--green"></div>
+            <div class="mark mark--green">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                    stroke-linejoin="round" width="20" height="20" style="color: var(--green);">
+                    <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+                </svg>
+            </div>
             <div>
                 <h1>GRACE-X GUARDIAN</h1>
-                <div class="sub">FAMILY SAFETY • THREAT SCANNER • QUARANTINE</div>
+                <div class="sub">CYBER SECURITY • THREAT INTELLIGENCE • FAMILY SAFETY</div>
             </div>
         </div>
         <div class="status">
-            <a href="#subscribe" class="btn warning">Subscribe £2/mo</a>
+            <a href="#pricing" class="btn glow-btn">Subscribe</a>
             <button class="btn primary" onclick="document.getElementById('paywall-modal').style.display = 'flex'">Enter
                 Access Key</button>
         </div>
     </header>
 
     <main class="container">
+
+        <!-- ── HERO ── -->
         <section class="hero">
-            <h2>Keep your family safe online for less than the price of a coffee.</h2>
-            <p class="lead">Built on military-grade AI threat assessment (TITAN) and child-safety protocols (Guardian).
-                Stop predators, identify phishing scams, and lock down malicious links before they do damage.</p>
-
-            <div class="grid" id="subscribe"
-                style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 24px; margin-top: 40px;">
-                <!-- Basic Tier -->
-                <div class="pricing-card" style="display: flex; flex-direction: column;">
-                    <div class="price-head">
-                        <h3>Basic Tier</h3>
-                        <div class="price">£2 <small>/ month</small></div>
-                        <div style="font-size: 13px; color: var(--amber); margin-top: 8px;">Early bird rate. Increases
-                            to £5 on May 1st, 2026.</div>
-                    </div>
-                    <ul class="features" style="flex: 1;">
-                        <li><strong>Text & Link Scanner</strong></li>
-                        <li><strong>Predator Detection Models</strong></li>
-                        <li><strong>Financial Fraud Alerts</strong></li>
-                        <li><strong>Safe OSINT Lookups</strong></li>
-                        <li style="opacity: 0.5; color: var(--muted);">✘ No Data Breach Checker</li>
-                        <li style="opacity: 0.5; color: var(--muted);">✘ No PDF/TXT Exports</li>
-                    </ul>
-                    <div style="margin-top: 24px; text-align: center;">
-                        <button class="btn primary btn-large" style="width: 100%;"
-                            onclick="alert('Simulated Checkout Flow. Subscription activated. Your Access Key is: EARLYBIRD26')">Subscribe
-                            (£2/mo)</button>
-                    </div>
+            <div class="hero-badge">POWERED BY TITAN & VENUS INTELLIGENCE</div>
+            <h2>Military-grade cyber protection.<br>Built for <span class="gradient-text">everyone</span>.</h2>
+            <p class="lead">Guardian combines AI-powered threat scanning, child safety monitoring, dark web breach
+                detection, and digital footprint analysis into one professional security platform. From parents
+                protecting children to professionals securing businesses.</p>
+            <div class="hero-stats">
+                <div class="stat-item">
+                    <div class="stat-num">6</div>
+                    <div class="stat-label">Security Modules</div>
                 </div>
-
-                <!-- Standard Tier -->
-                <div class="pricing-card"
-                    style="display: flex; flex-direction: column; border-color: var(--cyan); box-shadow: 0 0 30px rgba(83, 230, 255, 0.1);">
-                    <div class="price-head">
-                        <div style="display:flex; justify-content: space-between; align-items:flex-start;">
-                            <h3>Standard Tier</h3>
-                            <span class="pill live" style="font-size: 10px;">POPULAR</span>
-                        </div>
-                        <div class="price">£5 <small>/ month</small></div>
-                        <div style="font-size: 13px; color: var(--muted); margin-top: 8px;">The complete Guardian
-                            experience for personal security.</div>
-                    </div>
-                    <ul class="features" style="flex: 1;">
-                        <li>Everything in <strong>Basic</strong></li>
-                        <li><strong>Deep Web Breach Checker:</strong> See if your emails are compromised.</li>
-                        <li><strong>Scan History Storage:</strong> Save and review past alerts.</li>
-                        <li><strong>Export txt Reports:</strong> For evidence or sharing.</li>
-                    </ul>
-                    <div style="margin-top: 24px; text-align: center;">
-                        <button class="btn primary btn-large" style="width: 100%;"
-                            onclick="alert('Simulated Checkout Flow. Subscription activated. Your Access Key is: GRACEX2')">Subscribe
-                            (£5/mo)</button>
-                    </div>
+                <div class="stat-item">
+                    <div class="stat-num">24/7</div>
+                    <div class="stat-label">Always Available</div>
                 </div>
-
-                <!-- Pro Tier -->
-                <div class="pricing-card" style="display: flex; flex-direction: column; border-color: var(--purple);">
-                    <div class="price-head">
-                        <h3>Pro Tier</h3>
-                        <div class="price">£15 <small>/ month</small></div>
-                        <div style="font-size: 13px; color: var(--muted); margin-top: 8px;">For power users and
-                            investigators.</div>
-                    </div>
-                    <ul class="features" style="flex: 1;">
-                        <li>Everything in <strong>Standard</strong></li>
-                        <li><strong>Bulk Assessment:</strong> Scan full chat logs instantly.</li>
-                        <li><strong>API Access:</strong> Integrate into your own tools.</li>
-                        <li><strong>Priority Support</strong></li>
-                    </ul>
-                    <div style="margin-top: 24px; text-align: center;">
-                        <button class="btn primary btn-large"
-                            style="width: 100%; box-shadow: 0 0 20px rgba(189, 83, 255, 0.3); background: var(--purple);"
-                            onclick="alert('Simulated Checkout Flow. Subscription activated. Your Access Key is: GXPRO-ADMIN')">Subscribe
-                            (£15/mo)</button>
-                    </div>
+                <div class="stat-item">
+                    <div class="stat-num">0</div>
+                    <div class="stat-label">Data Stored</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-num">100%</div>
+                    <div class="stat-label">Privacy-First</div>
                 </div>
             </div>
         </section>
 
-        <!-- Paywall Modal -->
-        <div id="paywall-modal"
-            style="display: none; position: fixed; inset: 0; background: rgba(5,7,13,0.8); backdrop-filter: blur(8px); z-index: 1000; align-items: center; justify-content: center;">
-            <div class="card"
-                style="width: 100%; max-width: 400px; position: relative; border-color: var(--cyan); box-shadow: 0 0 40px rgba(83, 230, 255, 0.2);">
-                <button onclick="document.getElementById('paywall-modal').style.display='none'"
-                    style="position: absolute; top: 16px; right: 16px; background: none; border: none; color: white; cursor: pointer; font-size: 20px;">&times;</button>
-                <h3 style="color: var(--cyan); margin-top: 0;">Access Guardian App</h3>
-                <p>Please enter your active subscription key to continue.</p>
-                <div style="display: flex; gap: 8px; margin-top: 16px;">
-                    <input type="text" id="access-key-input" placeholder="e.g. GRACEX2"
-                        style="flex: 1; padding: 10px; background: rgba(0,0,0,0.5); border: 1px solid rgba(83, 230, 255, 0.4); color: white; border-radius: 6px; font-family: monospace;">
-                    <button class="btn primary" id="verify-key-btn">Enter</button>
+        <!-- ── FEATURE GRID ── -->
+        <section class="features-section">
+            <h2 class="section-title">What Guardian Protects You From</h2>
+            <div class="features-grid">
+                <div class="feature-card">
+                    <div class="feature-icon" style="--accent: var(--red);">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="28"
+                            height="28">
+                            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+                            <line x1="12" y1="8" x2="12" y2="12" />
+                            <line x1="12" y1="16" x2="12.01" y2="16" />
+                        </svg>
+                    </div>
+                    <h3>Predator Detection</h3>
+                    <p>AI-powered NLP analysis detects grooming patterns, isolation tactics, and coercion language in
+                        chat logs and messages.</p>
                 </div>
-                <div id="paywall-error" style="color: var(--red); font-size: 13px; margin-top: 8px; display: none;">
-                    Invalid Access Key. Please try again or subscribe below.</div>
-            </div>
-        </div>
-
-        <script>
-            document.getElementById('verify-key-btn').addEventListener('click', async () => {
-                const key = document.getElementById('access-key-input').value.trim();
-                const errorEl = document.getElementById('paywall-error');
-
-                if (!key) return;
-
-                const btn = document.getElementById('verify-key-btn');
-                btn.textContent = "...";
-
-                try {
-                    const res = await fetch('/api/login', {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ key })
-                    });
-
-                    const data = await res.json();
-
-                    if (res.ok && data.success) {
-                        // The session is now secure via HttpOnly cookie.
-                        // We store the tier so the UI can adapt dynamically.
-                        sessionStorage.setItem('guardian_tier', data.tier);
-                        window.location.href = 'app.html';
-                    } else {
-                        errorEl.style.display = 'block';
-                        errorEl.textContent = data.error || "Invalid Access Key. Please try again.";
-                    }
-                } catch (e) {
-                    errorEl.textContent = "Connection Error. Is the server running?";
-                    errorEl.style.display = 'block';
-                } finally {
-                    btn.textContent = "Enter";
-                }
-            });
-        </script>
-
-        <div class="grid two-col" style="margin-top: 40px;">
-            <div class="card">
-                <h3><span class="dot grn"></span> Child Safety First</h3>
-                <p>The internet can be a dark place. The Guardian module analyzes chat logs and messages for patterns
-                    used by predators—grooming, isolation tactics, and inappropriate requests—giving parents clear
-                    warnings.</p>
-            </div>
-            <div class="card">
-                <h3><span class="dot amb"></span> Anti-Phishing Quarantine</h3>
-                <p>Not sure if an email from your "bank" is real? Paste the text into the Venus Sandbox. It extracts the
-                    URLs safely, detects URL shorteners, and checks for financial manipulation tactics without making
-                    dangerous network requests.</p>
-                <div style="margin-top: 16px;">
-                    <a href="../../anti-phish/index.html" class="btn warning" target="_blank">Open Offline Scanner</a>
+                <div class="feature-card">
+                    <div class="feature-icon" style="--accent: var(--amber);">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="28"
+                            height="28">
+                            <path d="M22 12h-4l-3 9L9 3l-3 9H2" />
+                        </svg>
+                    </div>
+                    <h3>Phishing Scanner</h3>
+                    <p>Detects financial scams, urgency manipulation, brand impersonation, and malicious URLs safely
+                        inside a sandboxed environment.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon" style="--accent: var(--cyan);">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="28"
+                            height="28">
+                            <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
+                            <path d="M7 11V7a5 5 0 0 1 10 0v4" />
+                        </svg>
+                    </div>
+                    <h3>Password Auditor</h3>
+                    <p>Instant strength analysis with crack-time estimation, entropy calculation, and actionable
+                        improvement suggestions.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon" style="--accent: var(--purple);">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="28"
+                            height="28">
+                            <circle cx="12" cy="12" r="10" />
+                            <line x1="2" y1="12" x2="22" y2="12" />
+                            <path
+                                d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z" />
+                        </svg>
+                    </div>
+                    <h3>Dark Web Breach Check</h3>
+                    <p>Scan email addresses against known data breaches. Find out if your credentials are exposed on the
+                        dark web.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon" style="--accent: var(--green);">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="28"
+                            height="28">
+                            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
+                            <circle cx="12" cy="12" r="3" />
+                        </svg>
+                    </div>
+                    <h3>Digital Footprint</h3>
+                    <p>OSINT-style scan of your digital presence. Find where your data is exposed across social media,
+                        paste sites, and forums.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon" style="--accent: var(--amber);">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="28"
+                            height="28">
+                            <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" />
+                            <polyline points="22 4 12 14.01 9 11.01" />
+                        </svg>
+                    </div>
+                    <h3>Security Score</h3>
+                    <p>Complete security health check with personalised questionnaire. Get a grade and actionable steps
+                        to harden your posture.</p>
                 </div>
             </div>
-            <div class="card" style="opacity: 0.6; border-style: dashed;">
-                <h3><span class="dot" style="background: var(--muted); box-shadow: 0 0 10px var(--muted);"></span>
-                    Guardian Lite</h3>
-                <p>Coming soon. A lightweight placeholder for the future Guardian Lite integration.</p>
+        </section>
+
+        <!-- ── PRICING ── -->
+        <section id="pricing" class="pricing-section">
+            <h2 class="section-title">Simple, Transparent Pricing</h2>
+            <p class="section-sub">Every tier is a step up in protection. No hidden fees. Cancel anytime.</p>
+
+            <div class="pricing-grid">
+                <!-- Starter -->
+                <div class="pricing-card">
+                    <div class="tier-badge">STARTER</div>
+                    <div class="price">£2<small>/mo</small></div>
+                    <div class="price-note">Early bird rate • Rises to £5 May 1st</div>
+                    <ul class="tier-features">
+                        <li class="included"><span class="check">✓</span> Threat Scanner (text & link analysis)</li>
+                        <li class="included"><span class="check">✓</span> Predator Detection AI</li>
+                        <li class="included"><span class="check">✓</span> Venus Sandbox (safe URL extraction)</li>
+                        <li class="excluded"><span class="cross">✕</span> Password Auditor</li>
+                        <li class="excluded"><span class="cross">✕</span> Scan History</li>
+                        <li class="excluded"><span class="cross">✕</span> Data Breach Checker</li>
+                        <li class="excluded"><span class="cross">✕</span> Digital Footprint</li>
+                        <li class="excluded"><span class="cross">✕</span> Security Score</li>
+                    </ul>
+                    <button class="btn tier-btn"
+                        onclick="alert('Contact zacc78@gmail.com to purchase a Starter key.')">Get Started</button>
+                </div>
+
+                <!-- Shield -->
+                <div class="pricing-card">
+                    <div class="tier-badge tier-shield">SHIELD</div>
+                    <div class="price">£5<small>/mo</small></div>
+                    <div class="price-note">Essential protection for individuals</div>
+                    <ul class="tier-features">
+                        <li class="included"><span class="check">✓</span> Everything in Starter</li>
+                        <li class="included highlight"><span class="check">✓</span> Password Strength Auditor</li>
+                        <li class="included highlight"><span class="check">✓</span> Scan History & Review</li>
+                        <li class="excluded"><span class="cross">✕</span> Data Breach Checker</li>
+                        <li class="excluded"><span class="cross">✕</span> Export Reports</li>
+                        <li class="excluded"><span class="cross">✕</span> Digital Footprint</li>
+                        <li class="excluded"><span class="cross">✕</span> Security Score</li>
+                    </ul>
+                    <button class="btn tier-btn"
+                        onclick="alert('Contact zacc78@gmail.com to purchase a Shield key.')">Choose Shield</button>
+                </div>
+
+                <!-- Fortress (Popular) -->
+                <div class="pricing-card pricing-card--popular">
+                    <div class="popular-tag">MOST POPULAR</div>
+                    <div class="tier-badge tier-fortress">FORTRESS</div>
+                    <div class="price">£10<small>/mo</small></div>
+                    <div class="price-note">Complete personal security suite</div>
+                    <ul class="tier-features">
+                        <li class="included"><span class="check">✓</span> Everything in Shield</li>
+                        <li class="included highlight"><span class="check">✓</span> Dark Web Breach Checker</li>
+                        <li class="included highlight"><span class="check">✓</span> Export TXT Reports</li>
+                        <li class="excluded"><span class="cross">✕</span> Digital Footprint Scanner</li>
+                        <li class="excluded"><span class="cross">✕</span> Security Score Audit</li>
+                        <li class="excluded"><span class="cross">✕</span> Bulk Scan Mode</li>
+                    </ul>
+                    <button class="btn primary tier-btn glow-btn"
+                        onclick="alert('Contact zacc78@gmail.com to purchase a Fortress key.')">Choose Fortress</button>
+                </div>
+
+                <!-- Sentinel -->
+                <div class="pricing-card">
+                    <div class="tier-badge tier-sentinel">SENTINEL</div>
+                    <div class="price">£15<small>/mo</small></div>
+                    <div class="price-note">Advanced intelligence & monitoring</div>
+                    <ul class="tier-features">
+                        <li class="included"><span class="check">✓</span> Everything in Fortress</li>
+                        <li class="included highlight"><span class="check">✓</span> Digital Footprint Scanner</li>
+                        <li class="included highlight"><span class="check">✓</span> Security Score & Grading</li>
+                        <li class="included"><span class="check">✓</span> OSINT Social Media Lookup</li>
+                        <li class="excluded"><span class="cross">✕</span> Bulk Assessment Mode</li>
+                        <li class="excluded"><span class="cross">✕</span> API Access</li>
+                    </ul>
+                    <button class="btn tier-btn"
+                        onclick="alert('Contact zacc78@gmail.com to purchase a Sentinel key.')">Choose Sentinel</button>
+                </div>
+
+                <!-- Commander -->
+                <div class="pricing-card pricing-card--dark">
+                    <div class="tier-badge tier-commander">COMMANDER</div>
+                    <div class="price">£25<small>/mo</small></div>
+                    <div class="price-note">For professionals & investigators</div>
+                    <ul class="tier-features">
+                        <li class="included"><span class="check">✓</span> Everything in Sentinel</li>
+                        <li class="included highlight"><span class="check">✓</span> Bulk Assessment (full logs)</li>
+                        <li class="included highlight"><span class="check">✓</span> API Access</li>
+                        <li class="included highlight"><span class="check">✓</span> Priority Support</li>
+                        <li class="included"><span class="check">✓</span> Advanced Threat Scoring</li>
+                        <li class="included"><span class="check">✓</span> All Future Features</li>
+                    </ul>
+                    <button class="btn tier-btn tier-btn--commander"
+                        onclick="alert('Contact zacc78@gmail.com to purchase a Commander key.')">Choose
+                        Commander</button>
+                </div>
             </div>
-        </div>
+        </section>
+
+        <!-- ── TRUST ── -->
+        <section class="trust-section">
+            <div class="trust-grid">
+                <div class="trust-item">
+                    <div class="trust-icon">🔒</div>
+                    <h4>Zero-Knowledge</h4>
+                    <p>We never store your scanned data. Analysis happens in-session only.</p>
+                </div>
+                <div class="trust-item">
+                    <div class="trust-icon">🛡️</div>
+                    <h4>Built on TITAN</h4>
+                    <p>Uses the same threat intelligence engine trusted by security professionals.</p>
+                </div>
+                <div class="trust-item">
+                    <div class="trust-icon">🇬🇧</div>
+                    <h4>UK Developed</h4>
+                    <p>Designed and built in the UK with GDPR compliance at its core.</p>
+                </div>
+                <div class="trust-item">
+                    <div class="trust-icon">⚡</div>
+                    <h4>Instant Results</h4>
+                    <p>Real-time threat analysis. No waiting. No queues. Immediate intelligence.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- ── FAQ ── -->
+        <section class="faq-section">
+            <h2 class="section-title">Frequently Asked Questions</h2>
+            <div class="faq-grid">
+                <div class="faq-item">
+                    <h4>How does the threat scanner work?</h4>
+                    <p>Paste any suspicious text, email, or chat log into the scanner. Our AI analyses it locally for
+                        grooming patterns, phishing indicators, and malicious URLs — without ever contacting the
+                        suspicious server.</p>
+                </div>
+                <div class="faq-item">
+                    <h4>Is my data safe?</h4>
+                    <p>Absolutely. We operate on a zero-knowledge model. Scanned content is processed in-session only
+                        and never stored on our servers. Your privacy is non-negotiable.</p>
+                </div>
+                <div class="faq-item">
+                    <h4>Can I upgrade or downgrade my plan?</h4>
+                    <p>Yes. You can change your plan at any time. Upgrades take effect immediately. Downgrades apply at
+                        the next billing cycle.</p>
+                </div>
+                <div class="faq-item">
+                    <h4>What is the Digital Footprint Scanner?</h4>
+                    <p>It performs an OSINT-style scan of your digital presence — checking paste sites, social
+                        platforms, and public databases to show where your information is exposed online.</p>
+                </div>
+            </div>
+        </section>
     </main>
 
+    <!-- ── PAYWALL MODAL ── -->
+    <div id="paywall-modal" class="modal-overlay" style="display: none;">
+        <div class="modal-card">
+            <button class="modal-close"
+                onclick="document.getElementById('paywall-modal').style.display='none'">&times;</button>
+            <div class="modal-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="32" height="32"
+                    style="color: var(--cyan);">
+                    <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+                </svg>
+            </div>
+            <h3>Access Guardian</h3>
+            <p>Enter your subscription access key to continue.</p>
+            <div class="modal-input-group">
+                <input type="text" id="access-key-input" placeholder="Enter your access key" autocomplete="off"
+                    spellcheck="false">
+                <button class="btn primary" id="verify-key-btn">Verify</button>
+            </div>
+            <div id="paywall-error" class="modal-error" style="display: none;">Invalid Access Key. Please try again or
+                subscribe below.</div>
+            <div class="modal-hint">Enter the access key provided with your subscription.</div>
+        </div>
+    </div>
+
     <footer>
-        <div class="fine">GRACE-X AI Ecosystem • Guardian Standalone Application • Built by White-Hat Hackers for Global
-            Safety</div>
+        <div class="fine">GRACE-X AI™ • Guardian Security Platform • © Zachary Charles Anthony Crockett • All Rights
+            Reserved</div>
         <div class="right">
-            <div>Contact: gracex@outlook.com</div>
+            <div>Contact: zacc78@gmail.com</div>
         </div>
     </footer>
+
+    <script>
+        document.getElementById('verify-key-btn').addEventListener('click', async () => {
+            const key = document.getElementById('access-key-input').value.trim();
+            const errorEl = document.getElementById('paywall-error');
+            if (!key) return;
+
+            const btn = document.getElementById('verify-key-btn');
+            btn.textContent = "Verifying...";
+            btn.style.opacity = '0.6';
+
+            try {
+                const res = await fetch('/api/login', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ key })
+                });
+                const data = await res.json();
+                if (res.ok && data.success) {
+                    sessionStorage.setItem('guardian_tier', data.tier);
+                    sessionStorage.setItem('guardian_tier_name', data.tierName);
+                    sessionStorage.setItem('guardian_features', JSON.stringify(data.features));
+                    window.location.href = data.redirect || 'app.html';
+                } else {
+                    errorEl.style.display = 'block';
+                    errorEl.textContent = data.error || "Invalid Access Key.";
+                }
+            } catch (e) {
+                errorEl.textContent = "Connection Error. Is the server running?";
+                errorEl.style.display = 'block';
+            } finally {
+                btn.textContent = "Verify";
+                btn.style.opacity = '1';
+            }
+        });
+
+        // Enter key support
+        document.getElementById('access-key-input').addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') document.getElementById('verify-key-btn').click();
+        });
+    </script>
 </body>
 
 </html>

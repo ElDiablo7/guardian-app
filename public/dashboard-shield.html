@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>GRACE-X Guardian • Shield Dashboard</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="assets/css/style.css" />
+    <script>
+        (async () => {
+            try {
+                const res = await fetch('/api/session');
+                const data = await res.json();
+                if (!data.authenticated) { window.location.href = '/'; return; }
+                if (data.tier !== 'shield') { window.location.href = '/dashboard-' + data.tier + '.html'; return; }
+                sessionStorage.setItem('guardian_tier', data.tier);
+                sessionStorage.setItem('guardian_tier_name', data.tierName);
+                sessionStorage.setItem('guardian_features', JSON.stringify(data.features));
+            } catch (e) { window.location.href = '/'; }
+        })();
+    </script>
+</head>
+
+<body>
+    <div class="fx-bg fx-bg--hard"></div>
+    <div class="glow-orb glow-orb--1"></div>
+    <div class="glow-orb glow-orb--2"></div>
+
+    <header class="topbar topbar--shield">
+        <div class="brand">
+            <div class="mark mark--cyan">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="20" height="20"
+                    style="color: var(--cyan);">
+                    <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+                </svg>
+            </div>
+            <div>
+                <h1>GUARDIAN — SHIELD</h1>
+                <div class="sub">THREAT SCANNER • PASSWORD AUDITOR • SCAN HISTORY</div>
+            </div>
+        </div>
+        <div class="status">
+            <div class="pill sec"><strong>STATUS:</strong> ARMED</div>
+            <div class="pill live pill--shield"><strong>TIER:</strong> SHIELD</div>
+            <button class="btn" id="logoutBtn">Log Out</button>
+        </div>
+    </header>
+
+    <main class="container">
+
+        <!-- ── UPGRADE BANNER ── -->
+        <div class="upgrade-banner upgrade-banner--subtle">
+            <div class="upgrade-content">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18">
+                    <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2" />
+                </svg>
+                <span>Upgrade to <strong>Fortress</strong> for Breach Checking & Report Exports</span>
+            </div>
+            <a href="/#pricing" class="btn btn--sm">Upgrade</a>
+        </div>
+
+        <!-- ── NAV TABS ── -->
+        <div class="tab-bar" id="tabBar">
+            <button class="tab-btn active" data-tab="scanner" data-feature="scan">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16">
+                    <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+                </svg>
+                Threat Scanner
+            </button>
+            <button class="tab-btn" data-tab="password" data-feature="password">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16">
+                    <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
+                    <path d="M7 11V7a5 5 0 0 1 10 0v4" />
+                </svg>
+                Password Audit
+            </button>
+            <button class="tab-btn" data-tab="history" data-feature="history">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16">
+                    <circle cx="12" cy="12" r="10" />
+                    <polyline points="12 6 12 12 16 14" />
+                </svg>
+                History
+            </button>
+        </div>
+
+        <!-- ── SCANNER TAB ── -->
+        <div class="tab-panel active" id="panel-scanner">
+            <div class="card app-card">
+                <div class="card-head">
+                    <h2>Threat Assessment Console</h2>
+                    <div class="card-badge">TITAN + GUARDIAN</div>
+                </div>
+                <p class="card-desc">Paste suspicious text messages, emails, or chat logs below. The AI analyses content
+                    for predatory grooming, financial phishing, and malicious links — without contacting the source.</p>
+                <textarea id="scanInput" placeholder="[PASTE SUSPICIOUS TEXT OR LINKS HERE]
+
+Example 1: 'Hey, don't tell your parents we are talking...'
+Example 2: 'URGENT: Your bank account is locked. Click bit.ly/123 to verify...'"></textarea>
+                <div class="action-row">
+                    <button class="btn primary" id="scanBtn">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14"
+                            height="14">
+                            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+                        </svg>
+                        Run Guardian Analysis
+                    </button>
+                    <button class="btn" id="clearBtn">Clear Sandbox</button>
+                </div>
+                <div id="threatScore" class="threat-score-bar" style="display: none;">
+                    <div class="score-label">THREAT LEVEL</div>
+                    <div class="score-track">
+                        <div class="score-fill" id="scoreFill"></div>
+                    </div>
+                    <div class="score-value" id="scoreValue">0</div>
+                </div>
+                <div id="results" style="display: none;">
+                    <h3 class="results-title">Intelligence Report</h3>
+                    <div id="threatLog"></div>
+                    <div id="actionPlan" class="actions-box"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ── PASSWORD TAB ── -->
+        <div class="tab-panel" id="panel-password">
+            <div class="card app-card">
+                <div class="card-head">
+                    <h2>🔐 Password Strength Auditor</h2>
+                    <div class="card-badge">SHIELD</div>
+                </div>
+                <p class="card-desc">Enter a password to analyse its strength. We check length, complexity, common
+                    patterns, sequential characters, and estimate crack time against modern GPU attacks.</p>
+                <div class="input-row">
+                    <input type="password" id="passwordInput" placeholder="Enter password to test..."
+                        autocomplete="off">
+                    <button class="btn" id="togglePwdVis" title="Toggle visibility">👁️</button>
+                </div>
+                <button class="btn primary" id="checkPwdBtn">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14">
+                        <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
+                        <path d="M7 11V7a5 5 0 0 1 10 0v4" />
+                    </svg>
+                    Analyse Password
+                </button>
+                <div id="pwdResults" style="display: none;">
+                    <div class="pwd-score-card" id="pwdScoreCard">
+                        <div class="pwd-rating" id="pwdRating">—</div>
+                        <div class="pwd-bar-track">
+                            <div class="pwd-bar-fill" id="pwdBarFill"></div>
+                        </div>
+                        <div class="pwd-meta">
+                            <div><strong>Crack Time:</strong> <span id="pwdCrackTime">—</span></div>
+                            <div><strong>Entropy:</strong> <span id="pwdEntropy">—</span> bits</div>
+                            <div><strong>Score:</strong> <span id="pwdScore">—</span></div>
+                        </div>
+                    </div>
+                    <div id="pwdIssues" class="pwd-issues"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ── HISTORY TAB ── -->
+        <div class="tab-panel" id="panel-history">
+            <div class="card app-card">
+                <div class="card-head">
+                    <h2>📋 Scan History</h2>
+                    <div class="card-badge">SHIELD</div>
+                </div>
+                <p class="card-desc">Review your previous scans and threat assessments from this session.</p>
+                <div id="historyList">
+                    <div class="empty-state">No scan history yet. Run a threat scan to get started.</div>
+                </div>
+                <div class="action-row" style="margin-top: 16px;">
+                    <button class="btn" id="clearHistoryBtn">Clear History</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- ── LOCKED PREVIEWS ── -->
+        <section class="locked-features-section">
+            <h3 class="locked-title">🔒 Available on Higher Tiers</h3>
+            <div class="locked-grid">
+                <div class="locked-card">
+                    <div class="locked-icon">🌐</div>
+                    <h4>Breach Checker</h4>
+                    <p>Dark web exposure scanning</p>
+                    <span class="locked-tier">FORTRESS+</span>
+                </div>
+                <div class="locked-card">
+                    <div class="locked-icon">👁️</div>
+                    <h4>Digital Footprint</h4>
+                    <p>OSINT social media scan</p>
+                    <span class="locked-tier">SENTINEL+</span>
+                </div>
+                <div class="locked-card">
+                    <div class="locked-icon">📊</div>
+                    <h4>Security Score</h4>
+                    <p>Full security health audit</p>
+                    <span class="locked-tier">SENTINEL+</span>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <div class="fine">GRACE-X AI™ • Guardian Security Platform • © Zachary Charles Anthony Crockett</div>
+    </footer>
+
+    <script src="assets/js/dashboard.js"></script>
+</body>
+
+</html>

@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>GRACE-X Guardian • Sentinel Dashboard</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="assets/css/style.css" />
+    <script>
+        (async () => {
+            try {
+                const res = await fetch('/api/session');
+                const data = await res.json();
+                if (!data.authenticated) { window.location.href = '/'; return; }
+                if (data.tier !== 'sentinel') { window.location.href = '/dashboard-' + data.tier + '.html'; return; }
+                sessionStorage.setItem('guardian_tier', data.tier);
+                sessionStorage.setItem('guardian_tier_name', data.tierName);
+                sessionStorage.setItem('guardian_features', JSON.stringify(data.features));
+            } catch (e) { window.location.href = '/'; }
+        })();
+    </script>
+</head>
+
+<body>
+    <div class="fx-bg fx-bg--hard"></div>
+    <div class="glow-orb glow-orb--1"></div>
+    <div class="glow-orb glow-orb--2"></div>
+
+    <header class="topbar topbar--sentinel">
+        <div class="brand">
+            <div class="mark mark--amber">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="20" height="20"
+                    style="color: var(--amber);">
+                    <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+                </svg>
+            </div>
+            <div>
+                <h1>GUARDIAN — SENTINEL</h1>
+                <div class="sub">ADVANCED INTELLIGENCE • FOOTPRINT • SECURITY SCORING</div>
+            </div>
+        </div>
+        <div class="status">
+            <div class="pill sec"><strong>STATUS:</strong> ARMED</div>
+            <div class="pill live pill--sentinel"><strong>TIER:</strong> SENTINEL</div>
+            <button class="btn" id="logoutBtn">Log Out</button>
+        </div>
+    </header>
+
+    <main class="container">
+
+        <div class="upgrade-banner upgrade-banner--subtle">
+            <div class="upgrade-content">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18">
+                    <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2" />
+                </svg>
+                <span>Upgrade to <strong>Commander</strong> for Bulk Scans, API Access & Priority Support</span>
+            </div>
+            <a href="/#pricing" class="btn btn--sm">Upgrade</a>
+        </div>
+
+        <!-- ── NAV TABS ── -->
+        <div class="tab-bar" id="tabBar">
+            <button class="tab-btn active" data-tab="scanner" data-feature="scan">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16">
+                    <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+                </svg>
+                Threat Scanner
+            </button>
+            <button class="tab-btn" data-tab="password" data-feature="password">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16">
+                    <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
+                    <path d="M7 11V7a5 5 0 0 1 10 0v4" />
+                </svg>
+                Password Audit
+            </button>
+            <button class="tab-btn" data-tab="breach" data-feature="breach">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16">
+                    <circle cx="12" cy="12" r="10" />
+                    <line x1="12" y1="8" x2="12" y2="12" />
+                    <line x1="12" y1="16" x2="12.01" y2="16" />
+                </svg>
+                Breach Check
+            </button>
+            <button class="tab-btn" data-tab="footprint" data-feature="footprint">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16">
+                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
+                    <circle cx="12" cy="12" r="3" />
+                </svg>
+                Footprint
+            </button>
+            <button class="tab-btn" data-tab="score" data-feature="score">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16">
+                    <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" />
+                    <polyline points="22 4 12 14.01 9 11.01" />
+                </svg>
+                Security Score
+            </button>
+            <button class="tab-btn" data-tab="history" data-feature="history">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16">
+                    <circle cx="12" cy="12" r="10" />
+                    <polyline points="12 6 12 12 16 14" />
+                </svg>
+                History
+            </button>
+        </div>
+
+        <!-- ── SCANNER TAB ── -->
+        <div class="tab-panel active" id="panel-scanner">
+            <div class="card app-card">
+                <div class="card-head">
+                    <h2>Threat Assessment Console</h2>
+                    <div class="card-badge">TITAN + GUARDIAN</div>
+                </div>
+                <p class="card-desc">Paste suspicious text messages, emails, or chat logs below.</p>
+                <textarea id="scanInput" placeholder="[PASTE SUSPICIOUS TEXT OR LINKS HERE]"></textarea>
+                <div class="action-row">
+                    <button class="btn primary" id="scanBtn">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14"
+                            height="14">
+                            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+                        </svg>
+                        Run Guardian Analysis
+                    </button>
+                    <button class="btn" id="clearBtn">Clear Sandbox</button>
+                    <button class="btn" id="downloadReportBtn" style="display: none;">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14"
+                            height="14">
+                            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                            <polyline points="7 10 12 15 17 10" />
+                            <line x1="12" y1="15" x2="12" y2="3" />
+                        </svg>
+                        Export Report
+                    </button>
+                </div>
+                <div id="threatScore" class="threat-score-bar" style="display: none;">
+                    <div class="score-label">THREAT LEVEL</div>
+                    <div class="score-track">
+                        <div class="score-fill" id="scoreFill"></div>
+                    </div>
+                    <div class="score-value" id="scoreValue">0</div>
+                </div>
+                <div id="results" style="display: none;">
+                    <h3 class="results-title">Intelligence Report</h3>
+                    <div id="threatLog"></div>
+                    <div id="actionPlan" class="actions-box"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ── PASSWORD TAB ── -->
+        <div class="tab-panel" id="panel-password">
+            <div class="card app-card">
+                <div class="card-head">
+                    <h2>🔐 Password Strength Auditor</h2>
+                    <div class="card-badge">SHIELD+</div>
+                </div>
+                <p class="card-desc">Enter a password to analyse its strength with GPU crack-time estimation.</p>
+                <div class="input-row">
+                    <input type="password" id="passwordInput" placeholder="Enter password to test..."
+                        autocomplete="off">
+                    <button class="btn" id="togglePwdVis" title="Toggle visibility">👁️</button>
+                </div>
+                <button class="btn primary" id="checkPwdBtn">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14">
+                        <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
+                        <path d="M7 11V7a5 5 0 0 1 10 0v4" />
+                    </svg>
+                    Analyse Password
+                </button>
+                <div id="pwdResults" style="display: none;">
+                    <div class="pwd-score-card" id="pwdScoreCard">
+                        <div class="pwd-rating" id="pwdRating">—</div>
+                        <div class="pwd-bar-track">
+                            <div class="pwd-bar-fill" id="pwdBarFill"></div>
+                        </div>
+                        <div class="pwd-meta">
+                            <div><strong>Crack Time:</strong> <span id="pwdCrackTime">—</span></div>
+                            <div><strong>Entropy:</strong> <span id="pwdEntropy">—</span> bits</div>
+                            <div><strong>Score:</strong> <span id="pwdScore">—</span></div>
+                        </div>
+                    </div>
+                    <div id="pwdIssues" class="pwd-issues"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ── BREACH CHECK TAB ── -->
+        <div class="tab-panel" id="panel-breach">
+            <div class="card app-card">
+                <div class="card-head">
+                    <h2>🌐 Dark Web Breach Checker</h2>
+                    <div class="card-badge card-badge--fortress">FORTRESS+</div>
+                </div>
+                <p class="card-desc">Check if your email address has appeared in known public data breaches.</p>
+                <div class="input-row">
+                    <input type="email" id="breachEmail" placeholder="Enter email address to scan...">
+                    <button class="btn primary" id="checkBreachBtn">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14"
+                            height="14">
+                            <circle cx="12" cy="12" r="10" />
+                            <line x1="12" y1="8" x2="12" y2="12" />
+                            <line x1="12" y1="16" x2="12.01" y2="16" />
+                        </svg>
+                        Scan Deep Web
+                    </button>
+                </div>
+                <div id="breachResults" style="display: none;"></div>
+            </div>
+        </div>
+
+        <!-- ── FOOTPRINT TAB ── -->
+        <div class="tab-panel" id="panel-footprint">
+            <div class="card app-card">
+                <div class="card-head">
+                    <h2>👁️ Digital Footprint Scanner</h2>
+                    <div class="card-badge card-badge--sentinel">SENTINEL</div>
+                </div>
+                <p class="card-desc">OSINT-style scan of your digital presence across social media, paste sites, and
+                    forums.</p>
+                <div class="input-row">
+                    <input type="text" id="footprintQuery" placeholder="Enter email or username...">
+                    <button class="btn primary" id="footprintBtn">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14"
+                            height="14">
+                            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
+                            <circle cx="12" cy="12" r="3" />
+                        </svg>
+                        Scan Footprint
+                    </button>
+                </div>
+                <div id="footprintResults" style="display: none;"></div>
+            </div>
+        </div>
+
+        <!-- ── SECURITY SCORE TAB ── -->
+        <div class="tab-panel" id="panel-score">
+            <div class="card app-card">
+                <div class="card-head">
+                    <h2>📊 Security Health Score</h2>
+                    <div class="card-badge card-badge--sentinel">SENTINEL</div>
+                </div>
+                <p class="card-desc">Answer these quick questions to get a personalised security grade.</p>
+                <div class="questionnaire" id="scoreForm">
+                    <label class="q-item"><input type="checkbox" id="q-uniquePasswords"> I use unique passwords for each
+                        account</label>
+                    <label class="q-item"><input type="checkbox" id="q-passwordManager"> I use a password
+                        manager</label>
+                    <label class="q-item">
+                        Two-factor authentication:
+                        <select id="q-twoFactor">
+                            <option value="none">Not enabled</option>
+                            <option value="some">On some accounts</option>
+                            <option value="all">On all accounts</option>
+                        </select>
+                    </label>
+                    <label class="q-item"><input type="checkbox" id="q-autoUpdates"> I keep software
+                        auto-updated</label>
+                    <label class="q-item"><input type="checkbox" id="q-vpn"> I use a VPN for sensitive browsing</label>
+                    <label class="q-item"><input type="checkbox" id="q-publicWifi"> I avoid public WiFi for sensitive
+                        tasks</label>
+                    <label class="q-item"><input type="checkbox" id="q-phishingAware"> I can recognise phishing
+                        attempts</label>
+                    <label class="q-item"><input type="checkbox" id="q-backups"> I regularly back up important
+                        data</label>
+                    <label class="q-item"><input type="checkbox" id="q-privacySettings"> I review my privacy
+                        settings</label>
+                    <label class="q-item"><input type="checkbox" id="q-dataMinimisation"> I minimise data I share
+                        online</label>
+                </div>
+                <button class="btn primary" id="calcScoreBtn" style="margin-top: 16px;">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14">
+                        <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" />
+                        <polyline points="22 4 12 14.01 9 11.01" />
+                    </svg>
+                    Calculate Score
+                </button>
+                <div id="scoreResults" style="display: none;"></div>
+            </div>
+        </div>
+
+        <!-- ── HISTORY TAB ── -->
+        <div class="tab-panel" id="panel-history">
+            <div class="card app-card">
+                <div class="card-head">
+                    <h2>📋 Scan History</h2>
+                    <div class="card-badge">SHIELD+</div>
+                </div>
+                <p class="card-desc">Review previous scans from this session.</p>
+                <div id="historyList">
+                    <div class="empty-state">No scan history yet. Run a threat scan to get started.</div>
+                </div>
+                <div class="action-row" style="margin-top: 16px;">
+                    <button class="btn" id="clearHistoryBtn">Clear History</button>
+                    <button class="btn" id="exportHistoryBtn">Export All</button>
+                </div>
+            </div>
+        </div>
+
+    </main>
+
+    <footer>
+        <div class="fine">GRACE-X AI™ • Guardian Security Platform • © Zachary Charles Anthony Crockett</div>
+    </footer>
+
+    <script src="assets/js/dashboard.js"></script>
+</body>
+
+</html>
