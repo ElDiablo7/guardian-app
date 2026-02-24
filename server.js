@@ -47,39 +47,38 @@ const TIERS = {
 };
 
 // ── Load Keys Securely ──
-// Supports 3 methods (checked in order):
+// Supports 3 methods (merged):
 //   1. Individual env vars: KEY_EARLYBIRD26=starter, KEY_GX_SH_SHIELD01=shield, etc.
-//   2. Single JSON env var: GUARDIAN_KEYS='{"EARLYBIRD26":{"tier":"starter"}}'
+//   2. Single JSON env var: GUARDIAN_KEYS='{"EARLYBIRD26":"starter"}'
 //   3. Local keys.json file (dev only, gitignored)
 function loadKeys() {
     const keys = {};
 
-    // Method 1: Individual KEY_* env vars (simplest for Render)
-    // Format: KEY_MYKEY=tier  e.g. KEY_EARLYBIRD26=starter
-    // For keys with hyphens, replace - with _ in the env var name
-    // e.g. GX-SH-SHIELD01 → KEY_GX_SH_SHIELD01=shield
-    let foundIndividual = false;
-    for (const [envName, envValue] of Object.entries(process.env)) {
-        if (envName.startsWith('KEY_') && envValue) {
-            // Convert env var name back to key: KEY_GX_SH_SHIELD01 → GX-SH-SHIELD01
-            const keyName = envName.substring(4).replace(/_/g, '-');
-            keys[keyName] = { tier: envValue.toLowerCase().trim(), created: 'env' };
-            foundIndividual = true;
+    function addKey(name, data) {
+        if (!name || !data) return;
+        // Normalize name: Uppercase, trim, and treat hyphens/underscores as identical
+        const normalizedName = name.toUpperCase().trim().replace(/_/g, '-');
+        const tier = (typeof data === 'string' ? data : data.tier || '').toLowerCase().trim();
+        if (tier) {
+            keys[normalizedName] = { tier, created: new Date().toISOString() };
         }
     }
-    if (foundIndividual) {
-        console.log(`Loaded ${Object.keys(keys).length} key(s) from individual env vars`);
-        return keys;
+
+    // Method 1: Individual KEY_* env vars (simplest for Render)
+    for (const [envName, envValue] of Object.entries(process.env)) {
+        if (envName.startsWith('KEY_') && envValue) {
+            const keyName = envName.substring(4);
+            addKey(keyName, envValue);
+        }
     }
 
     // Method 2: Single JSON env var
     if (process.env.GUARDIAN_KEYS) {
         try {
             const parsed = JSON.parse(process.env.GUARDIAN_KEYS);
-            console.log(`Loaded ${Object.keys(parsed).length} key(s) from GUARDIAN_KEYS env var`);
-            return parsed;
+            Object.entries(parsed).forEach(([k, v]) => addKey(k, v));
         } catch (e) {
-            console.error('Failed to parse GUARDIAN_KEYS env var:', e.message);
+            console.error('Failed to parse GUARDIAN_KEYS:', e.message);
         }
     }
 
@@ -88,15 +87,14 @@ function loadKeys() {
     if (fs.existsSync(keysFile)) {
         try {
             const parsed = JSON.parse(fs.readFileSync(keysFile, 'utf8'));
-            console.log(`[DEV] Loaded ${Object.keys(parsed).length} key(s) from local keys.json`);
-            return parsed;
+            Object.entries(parsed).forEach(([k, v]) => addKey(k, v));
         } catch (e) {
             console.error('Failed to parse keys.json:', e.message);
         }
     }
 
-    console.warn('No keys configured. Add KEY_* env vars or set GUARDIAN_KEYS.');
-    return {};
+    console.log(`[CONFIG] Loaded ${Object.keys(keys).length} unique access keys`);
+    return keys;
 }
 
 let validKeys = loadKeys();
@@ -136,13 +134,23 @@ app.post('/api/login', (req, res) => {
     const { key } = req.body;
     if (!key) return res.status(400).json({ success: false, error: "Key required" });
 
-    const uppercaseKey = key.toUpperCase().trim();
-    if (validKeys[uppercaseKey]) {
-        const keyData = validKeys[uppercaseKey];
+    // Normalize input same as loadKeys: uppercase, trim, and hyphens/underscores match
+    const lookupKey = key.toUpperCase().trim().replace(/_/g, '-');
+
+    if (validKeys[lookupKey]) {
+        const keyData = validKeys[lookupKey];
         req.session.authenticated = true;
         req.session.tier = keyData.tier;
-        req.session.keyId = uppercaseKey.substring(0, 3) + '***';
-        const tierInfo = TIERS[keyData.tier] || {};
+        req.session.keyId = lookupKey.substring(0, 3) + '***';
+
+        const tierInfo = TIERS[keyData.tier];
+        if (!tierInfo) {
+            console.error(`Invalid tier '${keyData.tier}' assigned to key ${lookupKey.substring(0, 4)}***`);
+            return res.status(500).json({ success: false, error: "Configuration error (Invalid Tier)" });
+        }
+
+        console.log(`[AUTH] Login success: ${lookupKey.substring(0, 4)}*** -> ${keyData.tier}`);
+
         return req.session.save((err) => {
             if (err) {
                 console.error('Session save error:', err);
@@ -160,6 +168,7 @@ app.post('/api/login', (req, res) => {
         });
     }
 
+    console.warn(`[AUTH] Login failed: Key '${lookupKey.substring(0, 4)}***' not found in ${Object.keys(validKeys).length} loaded keys`);
     return res.status(401).json({ success: false, error: "Invalid Access Key" });
 });
 
