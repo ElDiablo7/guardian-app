@@ -26,9 +26,76 @@ document.addEventListener("DOMContentLoaded", () => {
             tabBtns.forEach(b => b.classList.remove('active'));
             tabPanels.forEach(p => p.classList.remove('active'));
             btn.classList.add('active');
-            document.getElementById('panel-' + btn.dataset.tab).classList.add('active');
+
+            const panel = document.getElementById('panel-' + btn.dataset.tab);
+            if (panel) {
+                panel.classList.add('active');
+
+                // Trigger Boot Sequence Animation
+                panel.style.animation = 'none';
+                panel.offsetHeight; // trigger reflow
+                panel.style.animation = 'fadeIn 0.5s cubic-bezier(0.4, 0, 0.2, 1) both';
+            }
         });
     });
+
+    // ── Neural Intelligence Feed ──
+    function initNeuralFeed() {
+        const feedEl = document.getElementById('intelFeed');
+        if (!feedEl) return;
+
+        const events = [
+            "Neural handshake verified. Node {ID} active.",
+            "Analyzing perimeter telemetry for sector {SEC}.",
+            "Threat detected in payload {HEX}. Quarantining...",
+            "Global breach detected: {LOC}. Sentinel updated.",
+            "Packet inspection complete. 0.00ms latency.",
+            "Sub-neural protocol {PRT} engaged.",
+            "Scanning dark web fragments for {QUERY}.",
+            "AI Core synchronising with TITAN node."
+        ];
+
+        const locations = ["London", "New York", "Tokyo", "Berlin", "Silicon Valley", "Singapore"];
+        const sectors = ["7G", "Alpha-9", "Gamma-3", "Omega-4"];
+
+        function addEvent() {
+            const event = events[Math.floor(Math.random() * events.length)]
+                .replace('{ID}', Math.random().toString(16).substring(2, 6).toUpperCase())
+                .replace('{SEC}', sectors[Math.floor(Math.random() * sectors.length)])
+                .replace('{HEX}', '0x' + Math.random().toString(16).substring(2, 8).toUpperCase())
+                .replace('{LOC}', locations[Math.floor(Math.random() * locations.length)])
+                .replace('{PRT}', 'GX-' + Math.floor(Math.random() * 900 + 100))
+                .replace('{QUERY}', 'suspicious_activity_' + Math.floor(Math.random() * 999));
+
+            const item = document.createElement('div');
+            item.className = 'intel-item';
+            item.innerHTML = `
+                <span class="intel-time">[${new Date().toLocaleTimeString()}]</span>
+                <span class="intel-msg">${event}</span>
+            `;
+            feedEl.prepend(item);
+            if (feedEl.children.length > 50) feedEl.lastElementChild.remove();
+        }
+
+        setInterval(addEvent, 3500);
+        for (let i = 0; i < 5; i++) setTimeout(addEvent, i * 200);
+    }
+
+    // ── Health Visualizer ──
+    function initHealthVisualizer() {
+        const container = document.getElementById('healthVisualizer');
+        if (!container) return;
+
+        container.innerHTML = `
+            <div class="health-node"></div>
+            <div class="health-ring" style="animation-delay: 0s"></div>
+            <div class="health-ring" style="animation-delay: 1s"></div>
+            <div class="health-ring" style="animation-delay: 2s"></div>
+        `;
+    }
+
+    initNeuralFeed();
+    initHealthVisualizer();
 
     // ── Logout ──
     const logoutBtn = document.getElementById('logoutBtn');

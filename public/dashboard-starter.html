@@ -63,7 +63,8 @@
     <main class="container">
 
         <!-- ── UPGRADE BANNER ── -->
-        <div class="upgrade-banner">
+        <div class="upgrade-banner glass-card">
+            <div class="data-stream"></div>
             <div class="upgrade-content">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="20" height="20">
                     <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2" />
@@ -76,43 +77,68 @@
             <a href="/#pricing" class="btn primary">View Plans</a>
         </div>
 
-        <!-- ── SINGLE MODULE: THREAT SCANNER ── -->
-        <div class="dashboard-grid dashboard-grid--single">
-            <div class="card app-card card--starter">
-                <div class="card-head">
-                    <h2>🛡️ Threat Assessment Console</h2>
-                    <div class="card-badge">TITAN + GUARDIAN</div>
-                </div>
-                <p class="card-desc">Paste suspicious text messages, emails, or chat logs below. The AI analyses content
-                    for predatory grooming, financial phishing, and malicious links — without contacting the source.</p>
-                <textarea id="scanInput" placeholder="[PASTE SUSPICIOUS TEXT OR LINKS HERE]
+        <div class="dashboard-grid"
+            style="display: grid; grid-template-columns: 1fr 300px; gap: 24px; margin-bottom: 24px;">
+            <div class="main-column">
 
-Example 1: 'Hey, don't tell your parents we are talking...'
-Example 2: 'URGENT: Your bank account is locked. Click bit.ly/123 to verify...'"></textarea>
-                <div class="action-row">
-                    <button class="btn primary" id="scanBtn">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14"
-                            height="14">
-                            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
-                        </svg>
-                        Run Guardian Analysis
-                    </button>
-                    <button class="btn" id="clearBtn">Clear Sandbox</button>
-                </div>
-                <div id="threatScore" class="threat-score-bar" style="display: none;">
-                    <div class="score-label">THREAT LEVEL</div>
-                    <div class="score-track">
-                        <div class="score-fill" id="scoreFill"></div>
+                <!-- ── SINGLE MODULE: THREAT SCANNER ── -->
+                <div class="tab-panel active" id="panel-scanner">
+                    <div class="card app-card glass-card">
+                        <div class="data-stream"></div>
+                        <div class="card-head">
+                            <h2>🛡️ Threat Assessment Console</h2>
+                            <div class="card-badge">TITAN + GUARDIAN</div>
+                        </div>
+                        <p class="card-desc">Paste suspicious text messages, emails, or chat logs below.</p>
+                        <textarea id="scanInput" placeholder="[PASTE SUSPICIOUS TEXT OR LINKS HERE]"></textarea>
+                        <div class="action-row">
+                            <button class="btn primary" id="scanBtn">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14"
+                                    height="14">
+                                    <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+                                </svg>
+                                Run Guardian Analysis
+                            </button>
+                            <button class="btn" id="clearBtn">Clear Sandbox</button>
+                        </div>
+                        <div id="threatScore" class="threat-score-bar" style="display: none;">
+                            <div class="score-label">THREAT LEVEL</div>
+                            <div class="score-track">
+                                <div class="score-fill" id="scoreFill"></div>
+                            </div>
+                            <div class="score-value" id="scoreValue">0</div>
+                        </div>
+                        <div id="results" style="display: none;">
+                            <h3 class="results-title">Intelligence Report</h3>
+                            <div id="threatLog"></div>
+                            <div id="actionPlan" class="actions-box"></div>
+                        </div>
                     </div>
-                    <div class="score-value" id="scoreValue">0</div>
                 </div>
-                <div id="results" style="display: none;">
-                    <h3 class="results-title">Intelligence Report</h3>
-                    <div id="threatLog"></div>
-                    <div id="actionPlan" class="actions-box"></div>
+
+            </div> <!-- close main-column -->
+
+            <aside class="sidebar-column">
+                <div class="card glass-card neural-pulse" style="margin-bottom: 24px;">
+                    <div class="card-head">
+                        <h2>SYSTEM VITALITY</h2>
+                        <div class="card-badge">LIVE</div>
+                    </div>
+                    <div id="healthVisualizer" class="health-visualizer"></div>
+                    <div style="text-align: center; font-family: var(--mono); font-size: 10px; color: var(--green);">
+                        STARTER NODE: ONLINE
+                    </div>
                 </div>
-            </div>
-        </div>
+
+                <div class="card glass-card">
+                    <div class="card-head">
+                        <h2>THREAT INTEL FEED</h2>
+                        <div class="card-badge">REAL-TIME</div>
+                    </div>
+                    <div id="intelFeed" class="intel-feed"></div>
+                </div>
+            </aside>
+        </div> <!-- close dashboard-grid -->
 
         <!-- ── LOCKED FEATURES PREVIEW ── -->
         <section class="locked-features-section">
