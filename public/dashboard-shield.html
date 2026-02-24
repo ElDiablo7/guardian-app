@@ -21,8 +21,30 @@
                 sessionStorage.setItem('guardian_tier', data.tier);
                 sessionStorage.setItem('guardian_tier_name', data.tierName);
                 sessionStorage.setItem('guardian_features', JSON.stringify(data.features));
-            } catch (e) { window.location.href = '/login.html'; }
+            } catch (e) {
+                window.location.href = '/';
+            }
         })();
+
+        // ── Voice Instructions Setup ──
+        function speak(text) {
+            if ('speechSynthesis' in window) {
+                window.speechSynthesis.cancel();
+                const utterance = new SpeechSynthesisUtterance(text);
+                const voices = window.speechSynthesis.getVoices();
+                const preferredVoice = voices.find(v => v.lang.includes('en-GB') && v.name.includes('Female')) ||
+                    voices.find(v => v.lang.includes('en-GB')) ||
+                    voices.find(v => v.lang.includes('en'));
+                if (preferredVoice) utterance.voice = preferredVoice;
+                utterance.rate = 1.0;
+                utterance.pitch = 1.0;
+                window.speechSynthesis.speak(utterance);
+            }
+        }
+
+        if ('speechSynthesis' in window) {
+            window.speechSynthesis.onvoiceschanged = () => { window.speechSynthesis.getVoices(); };
+        }
     </script>
 </head>
 

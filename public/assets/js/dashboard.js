@@ -303,9 +303,18 @@ document.addEventListener("DOMContentLoaded", () => {
                 } else {
                     issuesEl.innerHTML = '<div class="pwd-issue pwd-issue--good">✅ No issues found — excellent password!</div>';
                 }
+
+                // Voice Readout
+                let voiceText = `Password analysis complete. Rating: ${data.rating}. `;
+                if (data.rating === 'COMPROMISED') voiceText += `Critical warning: Password found in ${data.pwnCount} known breaches. Change immediately.`;
+                else if (data.percentage >= 70) voiceText += "Password is secure.";
+                else voiceText += "Password could be stronger.";
+                window.speak && window.speak(voiceText);
+
             } catch (err) {
                 pwdResults.style.display = 'block';
                 pwdResults.innerHTML = `<div class="threat-item threat-warn"><div class="threat-head">[ERROR]</div>${err.message}</div>`;
+                window.speak && window.speak("Error analysing password.");
             } finally {
                 checkPwdBtn.innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg> Analyse Password`;
             }
@@ -356,10 +365,13 @@ document.addEventListener("DOMContentLoaded", () => {
                         <li>Consider using a <strong>password manager</strong> for unique credentials</li>
                     </ul></div>`;
                     breachResults.innerHTML = html;
+
+                    window.speak && window.speak(`Warning. Email found in ${data.breaches.length} known data breaches. Immediate action recommended.`);
                 }
             } catch (err) {
                 breachResults.style.display = 'block';
                 breachResults.innerHTML = `<div class="threat-item threat-warn"><div class="threat-head">[ERROR]</div>${err.message}</div>`;
+                window.speak && window.speak("Error scanning deep web.");
             } finally {
                 checkBreachBtn.innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg> Scan Deep Web`;
             }
@@ -423,9 +435,14 @@ document.addEventListener("DOMContentLoaded", () => {
                 }
 
                 footprintResults.innerHTML = html;
+
+                let fpVoice = `Footprint scan complete. Found ${data.exposures.length} exposures and checked ${data.socialMedia.length} social platforms.`;
+                window.speak && window.speak(fpVoice);
+
             } catch (err) {
                 footprintResults.style.display = 'block';
                 footprintResults.innerHTML = `<div class="threat-item threat-warn"><div class="threat-head">[ERROR]</div>${err.message}</div>`;
+                window.speak && window.speak("Error scanning digital footprint.");
             } finally {
                 footprintBtn.innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg> Scan Footprint`;
             }
@@ -505,11 +522,124 @@ document.addEventListener("DOMContentLoaded", () => {
                 }
 
                 scoreResults.innerHTML = html;
+
+                window.speak && window.speak(`Security audit complete. Your grade is ${data.grade} with ${data.score} points.`);
             } catch (err) {
                 scoreResults.style.display = 'block';
                 scoreResults.innerHTML = `<div class="threat-item threat-warn"><div class="threat-head">[ERROR]</div>${err.message}</div>`;
+                window.speak && window.speak("Error calculating security score.");
             } finally {
                 calcScoreBtn.innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg> Calculate Score`;
+            }
+        });
+    }
+
+    // ── HTTP HEADER ANALYZER (Sentinel/Commander) ──
+    const scanHeadersBtn = document.getElementById('scanHeadersBtn');
+    const headerInput = document.getElementById('headerInput');
+    const headerResults = document.getElementById('headerResults');
+
+    if (scanHeadersBtn) {
+        scanHeadersBtn.addEventListener('click', async () => {
+            const url = headerInput.value.trim();
+            if (!url) return;
+            scanHeadersBtn.innerHTML = '<span class="spinner"></span> Scanning...';
+            try {
+                const res = await fetch('/api/analyze-headers', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ url }),
+                    credentials: 'include'
+                });
+                const data = await res.json();
+                if (!res.ok) throw new Error(data.error);
+
+                headerResults.style.display = 'block';
+
+                if (data.error) {
+                    headerResults.innerHTML = `<div class="threat-item threat-warn"><div class="threat-head">[ERROR]</div>${data.error}</div>`;
+                    window.speak && window.speak("Header scan failed.");
+                    return;
+                }
+
+                let html = `<h3 class="results-title">Header Security Report</h3>`;
+                let secureCount = 0;
+                let totalCount = 0;
+
+                html += '<div class="fp-section">';
+                for (const [header, result] of Object.entries(data.analysis)) {
+                    totalCount++;
+                    const isSecure = result.status === 'secure';
+                    if (isSecure) secureCount++;
+                    const icon = isSecure ? '✅' : '⚠️';
+                    const levelClass = isSecure ? 'safe' : 'warn';
+                    html += `<div class="threat-item threat-${levelClass}">
+                        <div class="threat-head">${icon} ${header}</div>
+                        ${result.message}
+                        ${result.value ? `<br><small style="opacity:0.7">Found: ${result.value}</small>` : ''}
+                    </div>`;
+                }
+                html += '</div>';
+
+                headerResults.innerHTML = html;
+                window.speak && window.speak(`Header check complete. ${secureCount} out of ${totalCount} security headers are properly configured.`);
+            } catch (err) {
+                headerResults.style.display = 'block';
+                headerResults.innerHTML = `<div class="threat-item threat-warn"><div class="threat-head">[ERROR]</div>${err.message}</div>`;
+                window.speak && window.speak("Error fetching headers.");
+            } finally {
+                scanHeadersBtn.innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg> Scan Headers`;
+            }
+        });
+    }
+
+    // ── IP REPUTATION SCANNER (Commander Only) ──
+    const scanIpBtn = document.getElementById('scanIpBtn');
+    const ipInput = document.getElementById('ipInput');
+    const ipResults = document.getElementById('ipResults');
+
+    if (scanIpBtn) {
+        scanIpBtn.addEventListener('click', async () => {
+            const ip = ipInput.value.trim();
+            if (!ip) return;
+            scanIpBtn.innerHTML = '<span class="spinner"></span> Analyzing...';
+            try {
+                const res = await fetch('/api/ip-reputation', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ ip }),
+                    credentials: 'include'
+                });
+                const data = await res.json();
+                if (!res.ok) throw new Error(data.error);
+
+                ipResults.style.display = 'block';
+                const levelClass = data.riskLevel === 'HIGH' ? 'critical' : data.riskLevel === 'MEDIUM' ? 'warn' : 'safe';
+
+                let html = `<div class="threat-item threat-${levelClass}">
+                    <div class="threat-head">[${data.riskLevel} RISK] IP Intelligence: ${data.ip}</div>
+                    <strong>ISP:</strong> ${data.isp}<br>
+                    <strong>Location:</strong> ${data.location}
+                </div>`;
+
+                if (data.flags && data.flags.length > 0) {
+                    html += '<div class="pwd-issues" style="margin-top:10px;">';
+                    data.flags.forEach(f => {
+                        html += `<div class="pwd-issue">🚩 ${f}</div>`;
+                    });
+                    html += '</div>';
+                } else {
+                    html += '<div class="pwd-issues" style="margin-top:10px;"><div class="pwd-issue pwd-issue--good">✅ Clean IP. No proxies, VPNs, or malicious flags detected.</div></div>';
+                }
+
+                ipResults.innerHTML = html;
+                window.speak && window.speak(`IP Intelligence complete. ${data.flags && data.flags.length > 0 ? 'Suspicious flags detected.' : 'IP appears clean.'} Risk level: ${data.riskLevel}.`);
+            } catch (err) {
+                ipResults.style.display = 'block';
+                ipResults.innerHTML = `<div class="threat-item threat-warn"><div class="threat-head">[ERROR]</div>${err.message}</div>`;
+                window.speak && window.speak("Error analyzing IP address.");
+            } finally {
+                scanIpBtn.innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.778 7.778 5.5 5.5 0 0 1 7.777-7.777zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3m-3.5 3.5L19 4"/></svg> Analyze IP Protocol`;
             }
         });
     }
@@ -594,6 +724,8 @@ document.addEventListener("DOMContentLoaded", () => {
             bulkScanBtn.disabled = false;
             bulkScanBtn.innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" /><polyline points="14 2 14 8 20 8" /></svg> Run Bulk Assessment`;
             if (bulkExportBtn) bulkExportBtn.style.display = 'inline-flex';
+
+            window.speak && window.speak(`Bulk assessment complete. ${lines.length} items scanned successfully.`);
         });
     }
 

@@ -23,6 +23,26 @@
                 sessionStorage.setItem('guardian_features', JSON.stringify(data.features));
             } catch (e) { window.location.href = '/login.html'; }
         })();
+
+        // ── Voice Instructions Setup ──
+        function speak(text) {
+            if ('speechSynthesis' in window) {
+                window.speechSynthesis.cancel();
+                const utterance = new SpeechSynthesisUtterance(text);
+                const voices = window.speechSynthesis.getVoices();
+                const preferredVoice = voices.find(v => v.lang.includes('en-GB') && v.name.includes('Female')) ||
+                    voices.find(v => v.lang.includes('en-GB')) ||
+                    voices.find(v => v.lang.includes('en'));
+                if (preferredVoice) utterance.voice = preferredVoice;
+                utterance.rate = 1.0;
+                utterance.pitch = 1.0;
+                window.speechSynthesis.speak(utterance);
+            }
+        }
+
+        if ('speechSynthesis' in window) {
+            window.speechSynthesis.onvoiceschanged = () => { window.speechSynthesis.getVoices(); };
+        }
     </script>
 </head>
 
@@ -119,6 +139,23 @@
                             <polyline points="22 4 12 14.01 9 11.01" />
                         </svg>
                         Security Score
+                    </button>
+                    <button class="tab-btn" data-tab="headers" data-feature="headers">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16"
+                            height="16">
+                            <rect x="2" y="3" width="20" height="14" rx="2" ry="2" />
+                            <line x1="8" y1="21" x2="16" y2="21" />
+                            <line x1="12" y1="17" x2="12" y2="21" />
+                        </svg>
+                        Header Analyzer
+                    </button>
+                    <button class="tab-btn" data-tab="iprep" data-feature="iprep">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16"
+                            height="16">
+                            <path
+                                d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.778 7.778 5.5 5.5 0 0 1 7.777-7.777zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3m-3.5 3.5L19 4" />
+                        </svg>
+                        IP Reputation
                     </button>
                     <button class="tab-btn" data-tab="bulk" data-feature="bulk">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16"
@@ -319,6 +356,54 @@
                             Calculate Score
                         </button>
                         <div id="scoreResults" style="display: none;"></div>
+                    </div>
+                </div>
+
+                <!-- ── HTTP HEADER ANALYZER TAB ── -->
+                <div class="tab-panel" id="panel-headers">
+                    <div class="card app-card">
+                        <div class="card-head">
+                            <h2>📡 HTTP Header Security Analyzer</h2>
+                            <div class="card-badge card-badge--commander">COMMANDER</div>
+                        </div>
+                        <p class="card-desc">Scan a website's headers to verify modern security implementations (HSTS,
+                            CSP, etc).</p>
+                        <div class="input-row">
+                            <input type="url" id="headerInput" placeholder="https://example.com" autocomplete="off">
+                            <button class="btn primary" id="scanHeadersBtn">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14"
+                                    height="14">
+                                    <polyline points="22 12 18 12 15 21 9 3 6 12 2 12" />
+                                </svg>
+                                Scan Headers
+                            </button>
+                        </div>
+                        <div id="headerResults" style="display: none; margin-top: 20px;"></div>
+                    </div>
+                </div>
+
+                <!-- ── IP REPUTATION TAB ── -->
+                <div class="tab-panel" id="panel-iprep">
+                    <div class="card app-card">
+                        <div class="card-head">
+                            <h2>🌐 AI IP Reputation Intelligence</h2>
+                            <div class="card-badge card-badge--commander">COMMANDER ONLY</div>
+                        </div>
+                        <p class="card-desc">Investigate IP addresses for known proxy, VPN, or malicious hosting
+                            behaviour.</p>
+                        <div class="input-row">
+                            <input type="text" id="ipInput" placeholder="Enter IP address (e.g. 8.8.8.8)..."
+                                autocomplete="off">
+                            <button class="btn primary" id="scanIpBtn">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14"
+                                    height="14">
+                                    <path
+                                        d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.778 7.778 5.5 5.5 0 0 1 7.777-7.777zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3m-3.5 3.5L19 4" />
+                                </svg>
+                                Analyze IP Protocol
+                            </button>
+                        </div>
+                        <div id="ipResults" style="display: none; margin-top: 20px;"></div>
                     </div>
                 </div>
 

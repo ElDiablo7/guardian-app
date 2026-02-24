@@ -32,6 +32,30 @@
                 window.location.href = '/';
             }
         })();
+
+        // ── Voice Instructions Setup ──
+        function speak(text) {
+            if ('speechSynthesis' in window) {
+                // Cancel any ongoing speech
+                window.speechSynthesis.cancel();
+                const utterance = new SpeechSynthesisUtterance(text);
+                // Try to find a good English voice (preferably UK/female to match Grace)
+                const voices = window.speechSynthesis.getVoices();
+                const preferredVoice = voices.find(v => v.lang.includes('en-GB') && v.name.includes('Female')) ||
+                    voices.find(v => v.lang.includes('en-GB')) ||
+                    voices.find(v => v.lang.includes('en'));
+                if (preferredVoice) utterance.voice = preferredVoice;
+
+                utterance.rate = 1.0;
+                utterance.pitch = 1.0;
+                window.speechSynthesis.speak(utterance);
+            }
+        }
+
+        // Ensure voices are loaded (Chrome sometimes needs this)
+        if ('speechSynthesis' in window) {
+            window.speechSynthesis.onvoiceschanged = () => { window.speechSynthesis.getVoices(); };
+        }
     </script>
 </head>
 

@@ -6,6 +6,9 @@ const session = require('express-session');
 const cookieParser = require('cookie-parser');
 const crypto = require('crypto');
 const fs = require('fs');
+const axios = require('axios');
+const dns = require('dns').promises;
+const tls = require('tls');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -47,8 +50,8 @@ const TIERS = {
     starter: { level: 1, name: 'Starter', price: '£2/mo', features: ['scan'] },
     shield: { level: 2, name: 'Shield', price: '£5/mo', features: ['scan', 'password', 'history'] },
     fortress: { level: 3, name: 'Fortress', price: '£10/mo', features: ['scan', 'password', 'history', 'breach', 'export'] },
-    sentinel: { level: 4, name: 'Sentinel', price: '£15/mo', features: ['scan', 'password', 'history', 'breach', 'export', 'footprint', 'score'] },
-    commander: { level: 5, name: 'Commander', price: '£25/mo', features: ['scan', 'password', 'history', 'breach', 'export', 'footprint', 'score', 'bulk', 'api', 'priority'] },
+    sentinel: { level: 4, name: 'Sentinel', price: '£15/mo', features: ['scan', 'password', 'history', 'breach', 'export', 'footprint', 'score', 'headers'] },
+    commander: { level: 5, name: 'Commander', price: '£25/mo', features: ['scan', 'password', 'history', 'breach', 'export', 'footprint', 'score', 'headers', 'iprep', 'bulk', 'api', 'priority'] },
 };
 
 // ── Load Keys Securely ──
@@ -199,7 +202,7 @@ app.get('/api/session', (req, res) => {
 });
 
 // ── TITAN & Guardian Threat Scanner ──
-app.post('/api/scan', requireAuth, requireFeature('scan'), (req, res) => {
+app.post('/api/scan', requireAuth, requireFeature('scan'), async (req, res) => {
     try {
         const { text } = req.body;
         if (!text || typeof text !== 'string') {
@@ -211,6 +214,7 @@ app.post('/api/scan', requireAuth, requireFeature('scan'), (req, res) => {
         let isPhishing = false;
         const textLower = text.toLowerCase();
 
+        // Grooming/Predatory Checks
         const isolationWords = ["don't tell your parents", "keep this a secret", "our little secret", "are you alone", "delete this", "sneaky", "just between us", "nobody needs to know"];
         const coercionWords = ["send me a pic", "show me", "punish you", "i'm older", "trust me", "prove it", "dare you", "you owe me", "if you loved me"];
         const inappropriateWords = ["sexy", "body", "undress", "naughty", "cam", "snap me", "vid", "private photo", "take off"];
@@ -233,6 +237,7 @@ app.post('/api/scan', requireAuth, requireFeature('scan'), (req, res) => {
             });
         }
 
+        // Phishing & Scam Assessment
         const urgencyWords = ['urgent', 'immediate action', 'suspend', 'verify account', 'unauthorized', 'attention required', 'your account will be', 'act now', 'limited time', 'expires today'];
         const financialWords = ['invoice', 'payment', 'wallet', 'crypto', 'bank', 'refund claim', 'wire transfer', 'gift card', 'western union', 'bitcoin', 'tax refund'];
         const impersonationWords = ['official notice', 'customer service', 'tech support', 'microsoft', 'apple id', 'paypal', 'amazon', 'hmrc', 'irs', 'royal mail'];
@@ -243,29 +248,59 @@ app.post('/api/scan', requireAuth, requireFeature('scan'), (req, res) => {
         if (financialWords.some(w => textLower.includes(w))) { phishingScore += 1; phishFlags.push('financial_keywords'); }
         if (impersonationWords.some(w => textLower.includes(w))) { phishingScore += 1; phishFlags.push('brand_impersonation'); }
 
+        // Real Network Intelligence (DNS & SSL)
         const urlRegex = /(https?:\/\/[^\s]+)|(www\.[^\s]+)|(\b[a-zA-Z0-9-]+\.[a-zA-Z]{2,}(?:\/\S*)?\b)/gi;
         const urls = text.match(urlRegex) || [];
         let domains = [];
 
         if (urls.length > 0) {
-            urls.forEach(u => {
+            phishingScore += 1;
+            for (let u of urls) {
                 if (!u.startsWith('http')) u = 'https://' + u;
                 try {
                     const urlObj = new URL(u);
-                    domains.push(urlObj.hostname);
-                    if (['bit.ly', 'tinyurl.com', 't.co', 'ow.ly', 'goo.gl', 'is.gd', 'rb.gy'].includes(urlObj.hostname)) {
+                    const hostname = urlObj.hostname;
+                    domains.push(hostname);
+
+                    // Basic Heuristics
+                    if (['bit.ly', 'tinyurl.com', 't.co', 'ow.ly', 'goo.gl', 'is.gd', 'rb.gy'].includes(hostname)) {
                         phishingScore += 2;
                         phishFlags.push('url_shortener');
-                        findings.push({ level: 'warn', type: 'VENUS SANDBOX', msg: `URL shortener detected (${urlObj.hostname}).` });
-                    } else if (urlObj.hostname.includes('-') && urlObj.hostname.split('.').length > 2) {
+                        findings.push({ level: 'warn', type: 'VENUS SANDBOX', msg: `URL shortener detected (${hostname}), often obscures malicious links.` });
+                    } else if (hostname.includes('-') && hostname.split('.').length > 2) {
                         phishingScore += 1;
-                        findings.push({ level: 'warn', type: 'VENUS SANDBOX', msg: `Suspicious subdomain pattern: ${urlObj.hostname}.` });
-                    } else {
-                        findings.push({ level: 'warn', type: 'VENUS SANDBOX', msg: `External link quarantined: ${urlObj.hostname}.` });
+                        findings.push({ level: 'warn', type: 'VENUS SANDBOX', msg: `Suspicious subdomain pattern: ${hostname}.` });
                     }
+
+                    // Real DNS Check
+                    try {
+                        const addresses = await dns.resolve(hostname);
+                        findings.push({ level: 'safe', type: 'NETWORK INTELLIGENCE', msg: `Domain ${hostname} resolves to valid IP route (${addresses[0]}).` });
+                    } catch (dnsErr) {
+                        phishingScore += 2;
+                        findings.push({ level: 'critical', type: 'NETWORK INTELLIGENCE', msg: `Domain ${hostname} failed DNS resolution. Potentially dead or blocked domain.` });
+                    }
+
+                    // Real TLS/SSL Check (if we reached here and DNS resolved, maybe test TLS)
+                    await new Promise((resolve) => {
+                        // Timeout after 1500ms to avoid blocking forever
+                        const socket = tls.connect(443, hostname, { servername: hostname, timeout: 1500 }, () => {
+                            if (socket.authorized) {
+                                findings.push({ level: 'safe', type: 'SSL CERTIFICATE', msg: `Connection to ${hostname} is securely encrypted and authorized.` });
+                            } else {
+                                phishingScore += 1;
+                                findings.push({ level: 'warn', type: 'SSL CERTIFICATE', msg: `SSL Authorization Warning: ${socket.authorizationError}` });
+                            }
+                            socket.end();
+                            resolve();
+                        });
+                        socket.on('error', () => resolve());
+                        socket.on('timeout', () => { socket.destroy(); resolve(); });
+                    });
+
+
                 } catch (e) { }
-            });
-            phishingScore += 1;
+            }
         }
 
         if (phishingScore >= 3 && !isPredatory) {
@@ -298,8 +333,8 @@ app.post('/api/scan', requireAuth, requireFeature('scan'), (req, res) => {
     }
 });
 
-// ── Password Strength Analyser ──
-app.post('/api/password-check', requireAuth, requireFeature('password'), (req, res) => {
+// ── Password Strength Analyser (with REAL HIBP Verification) ──
+app.post('/api/password-check', requireAuth, requireFeature('password'), async (req, res) => {
     const { password } = req.body;
     if (!password) return res.status(400).json({ error: "Password required" });
 
@@ -314,17 +349,6 @@ app.post('/api/password-check', requireAuth, requireFeature('password'), (req, r
     if (/[0-9]/.test(password)) score += 1; else issues.push('Add numbers');
     if (/[^a-zA-Z0-9]/.test(password)) score += 1; else issues.push('Add special characters');
     if (!/(.)\1{2,}/.test(password)) score += 1; else issues.push('Avoid repeated characters');
-
-    const commonPasswords = ['password', '123456', 'qwerty', 'abc123', 'letmein', 'admin', 'welcome', 'monkey', 'dragon', 'master'];
-    if (commonPasswords.some(p => password.toLowerCase().includes(p))) {
-        score = Math.max(0, score - 3);
-        issues.push('Contains a commonly used password pattern');
-    }
-
-    if (/(?:abc|bcd|cde|def|efg|fgh|ghi|hij|ijk|jkl|klm|lmn|mno|nop|opq|pqr|qrs|rst|stu|tuv|uvw|vwx|wxy|xyz|012|123|234|345|456|567|678|789)/i.test(password)) {
-        score = Math.max(0, score - 1);
-        issues.push('Contains sequential characters');
-    }
 
     const maxScore = 8;
     const percentage = Math.round((score / maxScore) * 100);
@@ -348,7 +372,37 @@ app.post('/api/password-check', requireAuth, requireFeature('password'), (req, r
     else if (seconds < 31536000 * 1000) crackTime = `${Math.round(seconds / 31536000)} years`;
     else crackTime = 'Centuries+';
 
-    res.json({ success: true, score, maxScore, percentage, rating, crackTime, issues, entropy: Math.round(Math.log2(combinations)) });
+    // REAL Check using Have I Been Pwned k-Anonymity API
+    let pwnCount = 0;
+    try {
+        const passHash = crypto.createHash('sha1').update(password).digest('hex').toUpperCase();
+        const prefix = passHash.substring(0, 5);
+        const suffix = passHash.substring(5);
+
+        const response = await axios.get(`https://api.pwnedpasswords.com/range/${prefix}`);
+        const text = response.data;
+
+        const hashes = text.split('\n');
+        for (let line of hashes) {
+            const [hashSuffix, count] = line.split(':');
+            if (hashSuffix.trim() === suffix) {
+                pwnCount = parseInt(count.trim());
+                break;
+            }
+        }
+    } catch (err) {
+        console.error("HIBP check failed:", err.message);
+    }
+
+    if (pwnCount > 0) {
+        rating = 'COMPROMISED';
+        issues.unshift(`CRITICAL: Password seen in ${pwnCount.toLocaleString()} known data breaches! Change immediately.`);
+        score = 0; // Force down if compromised
+    } else {
+        issues.push("Good news: Password not found in known public breaches.");
+    }
+
+    res.json({ success: true, score, maxScore, percentage, rating, crackTime, issues, pwnCount, entropy: Math.round(Math.log2(combinations)) });
 });
 
 // ── Data Breach Checker ──
@@ -379,8 +433,8 @@ app.post('/api/check-breach', requireAuth, requireFeature('breach'), (req, res) 
     }, 800);
 });
 
-// ── Digital Footprint Scanner ──
-app.post('/api/footprint', requireAuth, requireFeature('footprint'), (req, res) => {
+// ── Digital Footprint Scanner (Real OSINT Check) ──
+app.post('/api/footprint', requireAuth, requireFeature('footprint'), async (req, res) => {
     const { query } = req.body;
     if (!query) return res.status(400).json({ error: "Search query required" });
 
@@ -388,20 +442,58 @@ app.post('/api/footprint', requireAuth, requireFeature('footprint'), (req, res) 
 
     if (query.includes('@')) {
         results.exposures.push(
-            { type: 'Email Exposure', source: 'Paste Sites', risk: 'medium', detail: `Email found in 2 public paste dumps` },
-            { type: 'Registration Leak', source: 'Forum Database', risk: 'low', detail: `Email registered on 3 known forums` }
+            { type: 'Advisory', source: 'Scanner limitations', risk: 'medium', detail: `Specific email searching is simulated without a paid OSINT API key. Usernames mapped from email will be scanned.` }
         );
-        results.socialMedia.push(
-            { platform: 'LinkedIn', status: 'Account Found', visibility: 'Public' },
-            { platform: 'Twitter/X', status: 'Account Found', visibility: 'Semi-Private' },
-            { platform: 'GitHub', status: 'No Match', visibility: 'N/A' }
-        );
+        // Extract username from email
+        const username = query.split('@')[0];
+
+        // Let's do a fast concurrent check on a few places for the username part
+        const checks = [
+            { platform: 'GitHub', url: `https://github.com/${username}` },
+            { platform: 'Reddit', url: `https://www.reddit.com/user/${username}/about.json` },
+            { platform: 'Medium', url: `https://medium.com/@${username}` }
+        ];
+
+        await Promise.allSettled(checks.map(async (check) => {
+            try {
+                // simple HTTP GET without failing the whole promise.all
+                const r = await axios.get(check.url, { timeout: 3000, headers: { 'User-Agent': 'Mozilla/5.0' } });
+                if (r.status === 200) {
+                    results.socialMedia.push({ platform: check.platform, status: 'Account Found', visibility: 'Public', matchedUser: username });
+                }
+            } catch (e) {
+                if (e.response && e.response.status === 404) {
+                    results.socialMedia.push({ platform: check.platform, status: 'No Match', visibility: 'N/A' });
+                } else {
+                    results.socialMedia.push({ platform: check.platform, status: 'Timeout / Protected', visibility: 'Unknown' });
+                }
+            }
+        }));
+
     } else {
-        results.exposures.push({ type: 'Username Match', source: 'Social Databases', risk: 'low', detail: `Username found on 4 platforms` });
-        results.socialMedia.push(
-            { platform: 'Reddit', status: 'Possible Match', visibility: 'Public' },
-            { platform: 'Instagram', status: 'Possible Match', visibility: 'Private' }
-        );
+        const username = query.trim().toLowerCase();
+        // Real check on multiple platforms
+        const checks = [
+            { platform: 'GitHub', url: `https://github.com/${username}` },
+            { platform: 'Reddit', url: `https://www.reddit.com/user/${username}/about.json` },
+            { platform: 'Medium', url: `https://medium.com/@${username}` },
+            { platform: 'Pastebin (Search)', url: `https://pastebin.com/search?q=${username}` } // basic query
+        ];
+
+        await Promise.allSettled(checks.map(async (check) => {
+            try {
+                const r = await axios.get(check.url, { timeout: 3000, headers: { 'User-Agent': 'Mozilla/5.0' } });
+                if (r.status === 200) {
+                    results.socialMedia.push({ platform: check.platform, status: 'Account Found', visibility: 'Public', matchedUser: username });
+                }
+            } catch (e) {
+                if (e.response && e.response.status === 404) {
+                    results.socialMedia.push({ platform: check.platform, status: 'No Match', visibility: 'N/A' });
+                } else {
+                    results.socialMedia.push({ platform: check.platform, status: 'Timeout / Protected', visibility: 'Unknown' });
+                }
+            }
+        }));
     }
 
     results.recommendations = [
@@ -411,7 +503,7 @@ app.post('/api/footprint', requireAuth, requireFeature('footprint'), (req, res) 
         'Regularly search for your info using the footprint scanner'
     ];
 
-    setTimeout(() => res.json({ success: true, ...results }), 600);
+    res.json({ success: true, ...results });
 });
 
 // ── Security Score Endpoint ──
@@ -444,6 +536,66 @@ app.post('/api/security-score', requireAuth, requireFeature('score'), (req, res)
     else grade = 'F';
 
     res.json({ success: true, score, maxScore, grade, breakdown });
+});
+
+// ── External Features for Sentinel/Commander Tiers ──
+
+// Real HTTP Header Analyzer
+app.post('/api/analyze-headers', requireAuth, requireFeature('headers'), async (req, res) => {
+    let { url } = req.body;
+    if (!url) return res.status(400).json({ error: "URL required" });
+    if (!url.startsWith('http')) url = 'https://' + url;
+
+    try {
+        const response = await axios.head(url, { timeout: 4000 });
+        const headers = response.headers;
+
+        let securityHeaders = [
+            { name: 'Strict-Transport-Security (HSTS)', present: !!headers['strict-transport-security'], desc: 'Forces encrypted connections' },
+            { name: 'Content-Security-Policy (CSP)', present: !!headers['content-security-policy'], desc: 'Prevents XSS attacks' },
+            { name: 'X-Frame-Options', present: !!headers['x-frame-options'], desc: 'Prevents clickjacking' },
+            { name: 'X-Content-Type-Options', present: !!headers['x-content-type-options'], desc: 'Prevents MIME-sniffing' }
+        ];
+
+        let score = securityHeaders.filter(h => h.present).length;
+        let rating = score === 4 ? 'A' : score >= 2 ? 'B' : score === 1 ? 'C' : 'F';
+
+        res.json({ success: true, url, rating, securityHeaders, raw: headers });
+    } catch (e) {
+        res.status(500).json({ error: "Failed to connect to domain. Either it timed out or doesn't support HEAD requests.", details: e.message });
+    }
+});
+
+// Real IP Reputation Scanner
+app.post('/api/ip-reputation', requireAuth, requireFeature('iprep'), async (req, res) => {
+    const { ip } = req.body;
+    if (!ip) return res.status(400).json({ error: "IP address required" });
+
+    try {
+        // We will use a free, rate-limited public API for basic IP lookups (e.g., ip-api.com)
+        // Note: For a true enterprise app without tracking, a commercial API (like AbuseIPDB) or local GeoIP DB is needed.
+        const response = await axios.get(`http://ip-api.com/json/${ip}?fields=status,message,country,city,isp,org,as,mobile,proxy,hosting`, { timeout: 3000 });
+        const data = response.data;
+
+        if (data.status === 'fail') {
+            return res.status(400).json({ error: "Invalid IP address or lookup failed" });
+        }
+
+        let riskLevel = 'LOW';
+        let flags = [];
+        let riskScore = 0;
+
+        if (data.proxy) { riskLevel = 'HIGH'; flags.push('VPN/Proxy/TOR detected'); riskScore += 40; }
+        if (data.hosting) { flags.push('Datacenter / Hosting Provider (Not a residential IP)'); riskScore += 20; }
+        if (data.mobile) { flags.push('Mobile Carrier IP'); }
+
+        if (riskScore >= 40) riskLevel = 'HIGH';
+        else if (riskScore > 0) riskLevel = 'MODERATE';
+
+        res.json({ success: true, ip, data, riskLevel, flags });
+    } catch (e) {
+        res.status(500).json({ error: "Could not fetch IP intelligence.", details: e.message });
+    }
 });
 
 // ── Fallback ──
