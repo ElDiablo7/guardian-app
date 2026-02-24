@@ -1,14 +1,18 @@
 {
-    "EARLYBIRD26": {
-        "tier": "starter",
-        "created": "2026-02-24T00:00:00.000Z"
-    },
-    "GRACEX2": {
-        "tier": "shield",
-        "created": "2026-02-24T00:00:00.000Z"
-    },
-    "GXPRO-ADMIN": {
-        "tier": "commander",
-        "created": "2026-02-24T00:00:00.000Z"
-    }
+  "EARLYBIRD26": {
+    "tier": "starter",
+    "created": "2026-02-24T00:00:00.000Z"
+  },
+  "GRACEX2": {
+    "tier": "shield",
+    "created": "2026-02-24T00:00:00.000Z"
+  },
+  "GXPRO-ADMIN": {
+    "tier": "commander",
+    "created": "2026-02-24T00:00:00.000Z"
+  },
+  "GX26-SN-CF9885B4": {
+    "tier": "sentinel",
+    "created": "2026-02-24T22:00:01.504Z"
+  }
 }
