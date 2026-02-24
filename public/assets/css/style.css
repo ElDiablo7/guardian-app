@@ -1954,3 +1954,102 @@ textarea:focus {
 .tier-color-commander {
     color: var(--purple);
 }
+
+/* ── Login Page ── */
+.login-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: calc(100vh - 160px);
+}
+
+.login-card {
+    background: linear-gradient(180deg, rgba(15, 22, 48, .96), rgba(8, 12, 28, .98));
+    border: 1px solid rgba(83, 230, 255, .3);
+    border-radius: var(--radius);
+    padding: 48px;
+    max-width: 440px;
+    width: 100%;
+    text-align: center;
+    box-shadow: 0 20px 80px rgba(0, 0, 0, .6);
+    position: relative;
+    backdrop-filter: blur(20px);
+    animation: fadeIn 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.login-card h2 {
+    margin: 0 0 10px;
+    font-size: 24px;
+    font-weight: 700;
+}
+
+.login-card p {
+    color: var(--muted);
+    font-size: 14px;
+    margin-bottom: 32px;
+}
+
+.login-form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.login-input {
+    width: 100%;
+    padding: 14px 18px;
+    background: rgba(5, 7, 13, .8);
+    border: 1px solid rgba(83, 230, 255, .2);
+    color: var(--text);
+    border-radius: var(--radius-sm);
+    font-family: var(--mono);
+    font-size: 15px;
+    text-align: center;
+    letter-spacing: .15em;
+    transition: all .2s;
+}
+
+.login-input:focus {
+    outline: none;
+    border-color: var(--cyan);
+    box-shadow: 0 0 0 2px rgba(83, 230, 255, .15);
+    background: rgba(5, 7, 13, .9);
+}
+
+.login-btn {
+    width: 100%;
+    padding: 14px;
+    font-size: 13px;
+    font-weight: 600;
+    justify-content: center;
+}
+
+.login-error {
+    background: rgba(255, 76, 76, .1);
+    border: 1px solid rgba(255, 76, 76, .2);
+    color: var(--red);
+    font-size: 13px;
+    padding: 10px;
+    border-radius: var(--radius-sm);
+    margin-bottom: 20px;
+}
+
+.login-footer {
+    margin-top: 32px;
+    padding-top: 24px;
+    border-top: 1px solid var(--border);
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+}
+
+.login-link {
+    font-size: 12px;
+    color: var(--muted);
+    text-decoration: none;
+    transition: color .2s;
+}
+
+.login-link:hover {
+    color: var(--cyan);
+}

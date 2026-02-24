@@ -25,8 +25,13 @@ app.use(express.json());
 app.use(cookieParser());
 
 // ── Session ──
+const secret = process.env.SESSION_SECRET || 'gx-guardian-stable-secret-7788';
+if (!process.env.SESSION_SECRET) {
+    console.warn('[SECURITY] Using default session secret. For production, set SESSION_SECRET env var.');
+}
+
 app.use(session({
-    secret: process.env.SESSION_SECRET || crypto.randomBytes(32).toString('hex'),
+    secret: secret,
     resave: false,
     saveUninitialized: false,
     cookie: {
@@ -120,7 +125,7 @@ app.use((req, res, next) => {
     const protectedPaths = ['/app.html', '/app', '/dashboard-starter.html', '/dashboard-shield.html', '/dashboard-fortress.html', '/dashboard-sentinel.html', '/dashboard-commander.html'];
     if (protectedPaths.some(p => req.path === p || req.path.startsWith('/dashboard'))) {
         if (!req.session || !req.session.authenticated) {
-            return res.redirect('/');
+            return res.redirect('/login.html');
         }
     }
     next();

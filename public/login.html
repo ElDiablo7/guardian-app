@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Login • GRACE-X Guardian</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="assets/css/style.css" />
+</head>
+
+<body>
+    <div class="fx-bg fx-bg--hard"></div>
+    <div class="glow-orb glow-orb--1"></div>
+    <div class="glow-orb glow-orb--2"></div>
+
+    <header class="topbar">
+        <div class="brand">
+            <a href="/" style="text-decoration: none; display: flex; align-items: center; gap: 14px;">
+                <div class="mark mark--green">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round" width="20" height="20" style="color: var(--green);">
+                        <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+                    </svg>
+                </div>
+                <div>
+                    <h1>GRACE-X GUARDIAN</h1>
+                    <div class="sub">CYBER SECURITY ARCHITECTURE</div>
+                </div>
+            </a>
+        </div>
+        <div class="status">
+            <a href="/" class="btn">Back to Home</a>
+        </div>
+    </header>
+
+    <main class="container login-container">
+        <div class="login-card">
+            <div class="modal-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="40" height="40"
+                    style="color: var(--cyan);">
+                    <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
+                    <path d="M7 11V7a5 5 0 0 1 10 0v4" />
+                </svg>
+            </div>
+            <h2>Access Guardian</h2>
+            <p>Enter your 16-character access key to unlock your professional security suite.</p>
+
+            <div id="login-error" class="login-error" style="display: none;"></div>
+
+            <div class="login-form-group">
+                <input type="text" id="access-key-input" class="login-input" placeholder="XXXX-XXXX-XXXX-XXXX"
+                    autocomplete="off" spellcheck="false" autofocus>
+                <button class="btn primary login-btn glow-btn" id="verify-key-btn">Verify Architecture Access</button>
+            </div>
+
+            <div class="login-footer">
+                <a href="/#pricing" class="login-link">Purchase Key</a>
+                <a href="mailto:zacc78@gmail.com" class="login-link">Support</a>
+            </div>
+        </div>
+    </main>
+
+    <footer style="margin-top: auto;">
+        <div class="fine">GRACE-X AI™ • Secure Access Gateway • © Zachary Charles Anthony Crockett</div>
+    </footer>
+
+    <script>
+        const keyInput = document.getElementById('access-key-input');
+        const verifyBtn = document.getElementById('verify-key-btn');
+        const errorEl = document.getElementById('login-error');
+
+        async function performLogin() {
+            const key = keyInput.value.trim();
+            if (!key) return;
+
+            verifyBtn.textContent = "VERIFYING ENCRYPTION...";
+            verifyBtn.style.opacity = '0.6';
+            verifyBtn.disabled = true;
+            errorEl.style.display = 'none';
+
+            try {
+                const res = await fetch('/api/login', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ key }),
+                    credentials: 'include'
+                });
+                const data = await res.json();
+
+                if (res.ok && data.success) {
+                    sessionStorage.setItem('guardian_tier', data.tier);
+                    sessionStorage.setItem('guardian_tier_name', data.tierName);
+                    sessionStorage.setItem('guardian_features', JSON.stringify(data.features));
+
+                    // Smooth transition
+                    document.querySelector('.login-card').style.opacity = '0';
+                    document.querySelector('.login-card').style.transform = 'translateY(-20px)';
+
+                    setTimeout(() => {
+                        window.location.href = data.redirect || 'app.html';
+                    }, 300);
+                } else {
+                    errorEl.textContent = data.error || "Access Denied: Invalid Key Architecture.";
+                    errorEl.style.display = 'block';
+                    keyInput.classList.add('error-shake');
+                    setTimeout(() => keyInput.classList.remove('error-shake'), 500);
+                }
+            } catch (e) {
+                errorEl.textContent = "Connection Error: Guardian Node Unreachable.";
+                errorEl.style.display = 'block';
+            } finally {
+                verifyBtn.textContent = "Verify Architecture Access";
+                verifyBtn.style.opacity = '1';
+                verifyBtn.disabled = false;
+            }
+        }
+
+        verifyBtn.addEventListener('click', performLogin);
+        keyInput.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') performLogin();
+        });
+    </script>
+    <style>
+        .error-shake {
+            animation: shake 0.4s cubic-bezier(.36, .07, .19, .97) both;
+            border-color: var(--red) !important;
+        }
+
+        @keyframes shake {
+
+            10%,
+            90% {
+                transform: translate3d(-1px, 0, 0);
+            }
+
+            20%,
+            80% {
+                transform: translate3d(2px, 0, 0);
+            }
+
+            30%,
+            50%,
+            70% {
+                transform: translate3d(-4px, 0, 0);
+            }
+
+            40%,
+            60% {
+                transform: translate3d(4px, 0, 0);
+            }
+        }
+    </style>
+</body>
+
+</html>

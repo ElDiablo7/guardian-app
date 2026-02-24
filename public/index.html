@@ -36,8 +36,7 @@
         </div>
         <div class="status">
             <a href="#pricing" class="btn glow-btn">Subscribe</a>
-            <button class="btn primary" onclick="document.getElementById('paywall-modal').style.display = 'flex'">Enter
-                Access Key</button>
+            <a href="/login.html" class="btn primary">Enter Access Key</a>
         </div>
     </header>
 
@@ -304,79 +303,7 @@
         </section>
     </main>
 
-    <!-- ── PAYWALL MODAL ── -->
-    <div id="paywall-modal" class="modal-overlay" style="display: none;">
-        <div class="modal-card">
-            <button class="modal-close"
-                onclick="document.getElementById('paywall-modal').style.display='none'">&times;</button>
-            <div class="modal-icon">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="32" height="32"
-                    style="color: var(--cyan);">
-                    <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
-                </svg>
-            </div>
-            <h3>Access Guardian</h3>
-            <p>Enter your subscription access key to continue.</p>
-            <div class="modal-input-group">
-                <input type="text" id="access-key-input" placeholder="Enter your access key" autocomplete="off"
-                    spellcheck="false">
-                <button class="btn primary" id="verify-key-btn">Verify</button>
-            </div>
-            <div id="paywall-error" class="modal-error" style="display: none;">Invalid Access Key. Please try again or
-                subscribe below.</div>
-            <div class="modal-hint">Enter the access key provided with your subscription.</div>
-        </div>
-    </div>
-
     <footer>
-        <div class="fine">GRACE-X AI™ • Guardian Security Platform • © Zachary Charles Anthony Crockett • All Rights
-            Reserved</div>
-        <div class="right">
-            <div>Contact: zacc78@gmail.com</div>
-        </div>
-    </footer>
-
-    <script>
-        document.getElementById('verify-key-btn').addEventListener('click', async () => {
-            const key = document.getElementById('access-key-input').value.trim();
-            const errorEl = document.getElementById('paywall-error');
-            if (!key) return;
-
-            const btn = document.getElementById('verify-key-btn');
-            btn.textContent = "Verifying...";
-            btn.style.opacity = '0.6';
-
-            try {
-                const res = await fetch('/api/login', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ key }),
-                    credentials: 'include'
-                });
-                const data = await res.json();
-                if (res.ok && data.success) {
-                    sessionStorage.setItem('guardian_tier', data.tier);
-                    sessionStorage.setItem('guardian_tier_name', data.tierName);
-                    sessionStorage.setItem('guardian_features', JSON.stringify(data.features));
-                    window.location.href = data.redirect || 'app.html';
-                } else {
-                    errorEl.style.display = 'block';
-                    errorEl.textContent = data.error || "Invalid Access Key.";
-                }
-            } catch (e) {
-                errorEl.textContent = "Connection Error. Is the server running?";
-                errorEl.style.display = 'block';
-            } finally {
-                btn.textContent = "Verify";
-                btn.style.opacity = '1';
-            }
-        });
-
-        // Enter key support
-        document.getElementById('access-key-input').addEventListener('keydown', (e) => {
-            if (e.key === 'Enter') document.getElementById('verify-key-btn').click();
-        });
-    </script>
 </body>
 
 </html>

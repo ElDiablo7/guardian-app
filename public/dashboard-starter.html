@@ -18,7 +18,7 @@
                 const res = await fetch('/api/session', { credentials: 'include' });
                 const data = await res.json();
                 if (!data.authenticated) {
-                    window.location.href = '/';
+                    window.location.href = '/login.html';
                     return;
                 }
                 if (data.tier !== 'starter') {

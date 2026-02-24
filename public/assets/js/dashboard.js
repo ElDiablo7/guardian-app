@@ -36,7 +36,7 @@ document.addEventListener("DOMContentLoaded", () => {
         logoutBtn.addEventListener('click', async () => {
             try { await fetch('/api/logout', { method: 'POST', credentials: 'include' }); } catch (e) { }
             sessionStorage.clear();
-            window.location.href = '/';
+            window.location.href = '/login.html';
         });
     }
 

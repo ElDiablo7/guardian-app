@@ -16,12 +16,12 @@
             try {
                 const res = await fetch('/api/session', { credentials: 'include' });
                 const data = await res.json();
-                if (!data.authenticated) { window.location.href = '/'; return; }
+                if (!data.authenticated) { window.location.href = '/login.html'; return; }
                 if (data.tier !== 'sentinel') { window.location.href = '/dashboard-' + data.tier + '.html'; return; }
                 sessionStorage.setItem('guardian_tier', data.tier);
                 sessionStorage.setItem('guardian_tier_name', data.tierName);
                 sessionStorage.setItem('guardian_features', JSON.stringify(data.features));
-            } catch (e) { window.location.href = '/'; }
+            } catch (e) { window.location.href = '/login.html'; }
         })();
     </script>
 </head>
