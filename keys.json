@@ -1,14 +1,14 @@
 {
     "EARLYBIRD26": {
-        "tier": "basic",
+        "tier": "starter",
         "created": "2026-02-24T00:00:00.000Z"
     },
     "GRACEX2": {
-        "tier": "standard",
+        "tier": "shield",
         "created": "2026-02-24T00:00:00.000Z"
     },
     "GXPRO-ADMIN": {
-        "tier": "pro",
+        "tier": "commander",
         "created": "2026-02-24T00:00:00.000Z"
     }
 }

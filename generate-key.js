@@ -5,14 +5,16 @@ const crypto = require('crypto');
 const keysFile = path.join(__dirname, 'keys.json');
 const args = process.argv.slice(2);
 
-if (args.length === 0 || !['basic', 'standard', 'pro'].includes(args[0].toLowerCase())) {
+const allowedTiers = ['starter', 'shield', 'fortress', 'sentinel', 'commander'];
+if (args.length === 0 || !allowedTiers.includes(args[0].toLowerCase())) {
     console.log("Usage: node generate-key.js <tier>");
-    console.log("Allowed Tiers: basic | standard | pro");
+    console.log("Allowed Tiers: starter | shield | fortress | sentinel | commander");
     process.exit(1);
 }
 
 const tier = args[0].toLowerCase();
-const prefix = tier === 'basic' ? 'B' : (tier === 'standard' ? 'S' : 'P');
+const prefixMap = { starter: 'ST', shield: 'SH', fortress: 'FT', sentinel: 'SN', commander: 'CM' };
+const prefix = prefixMap[tier];
 
 // Generate random key e.g., GX26-S-A1B2C3D4
 const randomPart = crypto.randomBytes(4).toString('hex').toUpperCase();
