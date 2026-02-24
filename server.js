@@ -2,6 +2,9 @@ const express = require('express');
 const cors = require('cors');
 const helmet = require('helmet');
 const path = require('path');
+const session = require('express-session');
+const cookieParser = require('cookie-parser');
+const fs = require('fs');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -14,11 +17,44 @@ app.use(helmet({
 }));
 app.use(cors());
 app.use(express.json());
-app.use(express.static(path.join(__dirname, 'public')));
+app.use(cookieParser());
+
+// Secure Session Configuration
+app.use(session({
+    secret: process.env.SESSION_SECRET || 'gx26-guardian-fallback-secret-key',
+    resave: false,
+    saveUninitialized: false,
+    cookie: {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === 'production',
+        maxAge: 24 * 60 * 60 * 1000 // 1 day
+    }
+}));
+
+// Require auth middleware
+const requireAuth = (req, res, next) => {
+    // In actual production, ensure req.session is strictly verified
+    if (!req.session || !req.session.authenticated) {
+        return res.status(401).json({ success: false, error: "Unauthorized access. Please login." });
+    }
+    next();
+};
+
+// Protect the app.html file serving
+app.use((req, res, next) => {
+    if (req.path === '/app.html' || req.path === '/app') {
+        if (!req.session || !req.session.authenticated) {
+            return res.redirect('/');
+        }
+    }
+    next();
+});
+
+// Load static assets
 app.use(express.static(path.join(__dirname, 'public')));
 
 // The TITAN & Guardian Analysis Endpoint
-app.post('/api/scan', (req, res) => {
+app.post('/api/scan', requireAuth, (req, res) => {
     try {
         const { text } = req.body;
         if (!text || typeof text !== 'string') {
@@ -118,6 +154,70 @@ app.post('/api/scan', (req, res) => {
         console.error("Scan Error:", error);
         res.status(500).json({ error: "Internal Server Error during threat assessment" });
     }
+});
+
+// Mock Data Breach Database (for demo/standalone purposes)
+const mockBreaches = {
+    "test@example.com": [
+        { source: "LinkedIn (2012)", data: ["Email", "Passwords"] },
+        { source: "Adobe (2013)", data: ["Email", "Passwords", "Usernames"] }
+    ],
+    "admin@gracex.com": [
+        { source: "Canva (2019)", data: ["Email", "Names", "Passwords"] }
+    ]
+};
+
+// Login Endpoint
+app.post('/api/login', (req, res) => {
+    const { key } = req.body;
+    if (!key) return res.status(400).json({ success: false, error: "Key required" });
+
+    // Load dynamically from keys.json
+    const keysFile = path.join(__dirname, 'keys.json');
+    let validKeys = {};
+    if (fs.existsSync(keysFile)) {
+        try { validKeys = JSON.parse(fs.readFileSync(keysFile, 'utf8')); } catch (e) { }
+    }
+
+    const uppercaseKey = key.toUpperCase();
+
+    // Check if key exists and is valid
+    if (validKeys[uppercaseKey]) {
+        const keyData = validKeys[uppercaseKey];
+        // Establish Session
+        req.session.authenticated = true;
+        req.session.tier = keyData.tier; // basic, standard, pro
+        req.session.keyId = uppercaseKey;
+
+        return res.json({ success: true, message: "Access Granted", tier: keyData.tier });
+    }
+
+    return res.status(401).json({ success: false, error: "Invalid Access Key" });
+});
+
+// Logout Endpoint
+app.post('/api/logout', (req, res) => {
+    req.session.destroy();
+    res.json({ success: true, message: "Logged out" });
+});
+
+// Data Breach Checker Endpoint
+app.post('/api/check-breach', requireAuth, (req, res) => {
+    if (req.session.tier === 'basic') {
+        return res.status(403).json({ error: "Please upgrade to Standard or Pro to use the Data Breach Checker." });
+    }
+
+    const { email } = req.body;
+
+    if (!email || !email.includes('@')) {
+        return res.status(400).json({ error: "Invalid email address" });
+    }
+
+    // Simulate network delay for realism
+    setTimeout(() => {
+        const breaches = mockBreaches[email.toLowerCase()] || [];
+        res.json({ success: true, breaches });
+    }, 800);
 });
 
 // Fallback route for SPA / direct file access

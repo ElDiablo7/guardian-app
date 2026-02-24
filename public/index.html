@@ -21,7 +21,8 @@
         </div>
         <div class="status">
             <a href="#subscribe" class="btn warning">Subscribe £2/mo</a>
-            <a href="app.html" class="btn primary">Launch App</a>
+            <button class="btn primary" onclick="document.getElementById('paywall-modal').style.display = 'flex'">Enter
+                Access Key</button>
         </div>
     </header>
 
@@ -31,32 +32,135 @@
             <p class="lead">Built on military-grade AI threat assessment (TITAN) and child-safety protocols (Guardian).
                 Stop predators, identify phishing scams, and lock down malicious links before they do damage.</p>
 
-            <div class="pricing-card" id="subscribe">
-                <div class="price-head">
-                    <h3>Guardian Family Tier</h3>
-                    <div class="price">£2 <small>/ month</small></div>
+            <div class="grid" id="subscribe"
+                style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 24px; margin-top: 40px;">
+                <!-- Basic Tier -->
+                <div class="pricing-card" style="display: flex; flex-direction: column;">
+                    <div class="price-head">
+                        <h3>Basic Tier</h3>
+                        <div class="price">£2 <small>/ month</small></div>
+                        <div style="font-size: 13px; color: var(--amber); margin-top: 8px;">Early bird rate. Increases
+                            to £5 on May 1st, 2026.</div>
+                    </div>
+                    <ul class="features" style="flex: 1;">
+                        <li><strong>Text & Link Scanner</strong></li>
+                        <li><strong>Predator Detection Models</strong></li>
+                        <li><strong>Financial Fraud Alerts</strong></li>
+                        <li><strong>Safe OSINT Lookups</strong></li>
+                        <li style="opacity: 0.5; color: var(--muted);">✘ No Data Breach Checker</li>
+                        <li style="opacity: 0.5; color: var(--muted);">✘ No PDF/TXT Exports</li>
+                    </ul>
+                    <div style="margin-top: 24px; text-align: center;">
+                        <button class="btn primary btn-large" style="width: 100%;"
+                            onclick="alert('Simulated Checkout Flow. Subscription activated. Your Access Key is: EARLYBIRD26')">Subscribe
+                            (£2/mo)</button>
+                    </div>
                 </div>
-                <ul class="features">
-                    <li><strong>Text & Link Scanner:</strong> Safely check emails, texts, and social messages without
-                        clicking dangerous links.</li>
-                    <li><strong>Predator Detection:</strong> Specialized NLP models scan chats for grooming behaviour
-                        and inappropriate boundaries.</li>
-                    <li><strong>Financial Fraud Alerts:</strong> Immediate warnings on common phishing tactics and
-                        urgency-based scams.</li>
-                    <li><strong>Safe OSINT Lookups:</strong> Verify domains safely without exposing your IP address to
-                        attackers.</li>
-                    <li><strong>Concessions Available:</strong> Free access for disabled and vulnerable individuals upon
-                        request. We believe safety is a human right.</li>
-                </ul>
-                <div style="margin-top: 24px; text-align: center;">
-                    <button class="btn primary btn-large"
-                        onclick="alert('Simulated Checkout Flow. Subscription activated.')">Subscribe Now
-                        (£2/mo)</button>
-                    <div class="fine-print">Cancel anytime. 100% locally processed — we don't store your sensitive
-                        scans.</div>
+
+                <!-- Standard Tier -->
+                <div class="pricing-card"
+                    style="display: flex; flex-direction: column; border-color: var(--cyan); box-shadow: 0 0 30px rgba(83, 230, 255, 0.1);">
+                    <div class="price-head">
+                        <div style="display:flex; justify-content: space-between; align-items:flex-start;">
+                            <h3>Standard Tier</h3>
+                            <span class="pill live" style="font-size: 10px;">POPULAR</span>
+                        </div>
+                        <div class="price">£5 <small>/ month</small></div>
+                        <div style="font-size: 13px; color: var(--muted); margin-top: 8px;">The complete Guardian
+                            experience for personal security.</div>
+                    </div>
+                    <ul class="features" style="flex: 1;">
+                        <li>Everything in <strong>Basic</strong></li>
+                        <li><strong>Deep Web Breach Checker:</strong> See if your emails are compromised.</li>
+                        <li><strong>Scan History Storage:</strong> Save and review past alerts.</li>
+                        <li><strong>Export txt Reports:</strong> For evidence or sharing.</li>
+                    </ul>
+                    <div style="margin-top: 24px; text-align: center;">
+                        <button class="btn primary btn-large" style="width: 100%;"
+                            onclick="alert('Simulated Checkout Flow. Subscription activated. Your Access Key is: GRACEX2')">Subscribe
+                            (£5/mo)</button>
+                    </div>
+                </div>
+
+                <!-- Pro Tier -->
+                <div class="pricing-card" style="display: flex; flex-direction: column; border-color: var(--purple);">
+                    <div class="price-head">
+                        <h3>Pro Tier</h3>
+                        <div class="price">£15 <small>/ month</small></div>
+                        <div style="font-size: 13px; color: var(--muted); margin-top: 8px;">For power users and
+                            investigators.</div>
+                    </div>
+                    <ul class="features" style="flex: 1;">
+                        <li>Everything in <strong>Standard</strong></li>
+                        <li><strong>Bulk Assessment:</strong> Scan full chat logs instantly.</li>
+                        <li><strong>API Access:</strong> Integrate into your own tools.</li>
+                        <li><strong>Priority Support</strong></li>
+                    </ul>
+                    <div style="margin-top: 24px; text-align: center;">
+                        <button class="btn primary btn-large"
+                            style="width: 100%; box-shadow: 0 0 20px rgba(189, 83, 255, 0.3); background: var(--purple);"
+                            onclick="alert('Simulated Checkout Flow. Subscription activated. Your Access Key is: GXPRO-ADMIN')">Subscribe
+                            (£15/mo)</button>
+                    </div>
                 </div>
             </div>
         </section>
+
+        <!-- Paywall Modal -->
+        <div id="paywall-modal"
+            style="display: none; position: fixed; inset: 0; background: rgba(5,7,13,0.8); backdrop-filter: blur(8px); z-index: 1000; align-items: center; justify-content: center;">
+            <div class="card"
+                style="width: 100%; max-width: 400px; position: relative; border-color: var(--cyan); box-shadow: 0 0 40px rgba(83, 230, 255, 0.2);">
+                <button onclick="document.getElementById('paywall-modal').style.display='none'"
+                    style="position: absolute; top: 16px; right: 16px; background: none; border: none; color: white; cursor: pointer; font-size: 20px;">&times;</button>
+                <h3 style="color: var(--cyan); margin-top: 0;">Access Guardian App</h3>
+                <p>Please enter your active subscription key to continue.</p>
+                <div style="display: flex; gap: 8px; margin-top: 16px;">
+                    <input type="text" id="access-key-input" placeholder="e.g. GRACEX2"
+                        style="flex: 1; padding: 10px; background: rgba(0,0,0,0.5); border: 1px solid rgba(83, 230, 255, 0.4); color: white; border-radius: 6px; font-family: monospace;">
+                    <button class="btn primary" id="verify-key-btn">Enter</button>
+                </div>
+                <div id="paywall-error" style="color: var(--red); font-size: 13px; margin-top: 8px; display: none;">
+                    Invalid Access Key. Please try again or subscribe below.</div>
+            </div>
+        </div>
+
+        <script>
+            document.getElementById('verify-key-btn').addEventListener('click', async () => {
+                const key = document.getElementById('access-key-input').value.trim();
+                const errorEl = document.getElementById('paywall-error');
+
+                if (!key) return;
+
+                const btn = document.getElementById('verify-key-btn');
+                btn.textContent = "...";
+
+                try {
+                    const res = await fetch('/api/login', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ key })
+                    });
+
+                    const data = await res.json();
+
+                    if (res.ok && data.success) {
+                        // The session is now secure via HttpOnly cookie.
+                        // We store the tier so the UI can adapt dynamically.
+                        sessionStorage.setItem('guardian_tier', data.tier);
+                        window.location.href = 'app.html';
+                    } else {
+                        errorEl.style.display = 'block';
+                        errorEl.textContent = data.error || "Invalid Access Key. Please try again.";
+                    }
+                } catch (e) {
+                    errorEl.textContent = "Connection Error. Is the server running?";
+                    errorEl.style.display = 'block';
+                } finally {
+                    btn.textContent = "Enter";
+                }
+            });
+        </script>
 
         <div class="grid two-col" style="margin-top: 40px;">
             <div class="card">
