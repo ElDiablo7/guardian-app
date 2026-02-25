@@ -18,6 +18,9 @@ document.addEventListener("DOMContentLoaded", () => {
 
             // Update button text
             themeToggleBtn.innerHTML = isLight ? '🌙 Dark Mode' : '☀️ Light Mode';
+
+            // Voice Helper
+            if (window.speak) window.speak(isLight ? 'Switching to light visibility mode.' : 'Engaging dark stealth mode.');
         });
     }
 
@@ -52,6 +55,9 @@ document.addEventListener("DOMContentLoaded", () => {
             const panel = document.getElementById('panel-' + btn.dataset.tab);
             if (panel) {
                 panel.classList.add('active');
+
+                // Voice Helper
+                if (window.speak) window.speak(`Accessing ${btn.textContent.trim()}.`);
 
                 // Trigger Boot Sequence Animation
                 panel.style.animation = 'none';
@@ -119,10 +125,16 @@ document.addEventListener("DOMContentLoaded", () => {
     initNeuralFeed();
     initHealthVisualizer();
 
+    // Voice Helper Startup
+    setTimeout(() => {
+        if (window.speak) window.speak(`Guardian ${tierName} node online. Background monitoring and threat intelligence feeds active.`);
+    }, 1200);
+
     // ── Logout ──
     const logoutBtn = document.getElementById('logoutBtn');
     if (logoutBtn) {
         logoutBtn.addEventListener('click', async () => {
+            if (window.speak) window.speak("Disengaging Guardian node. Logging out.");
             try { await fetch('/api/logout', { method: 'POST', credentials: 'include' }); } catch (e) { }
             sessionStorage.clear();
             window.location.href = '/login.html';
@@ -149,6 +161,7 @@ document.addEventListener("DOMContentLoaded", () => {
             if (resultsDiv) resultsDiv.style.display = 'none';
             if (threatScoreBar) threatScoreBar.style.display = 'none';
             if (downloadBtn) downloadBtn.style.display = 'none';
+            if (window.speak) window.speak("Sandbox cleared.");
         });
     }
 
@@ -156,6 +169,8 @@ document.addEventListener("DOMContentLoaded", () => {
         scanBtn.addEventListener('click', async () => {
             const text = inputEl.value;
             if (!text.trim()) return;
+
+            if (window.speak) window.speak("Initiating threat analysis on provided text.");
 
             scanBtn.innerHTML = '<span class="spinner"></span> Analysing...';
             scanBtn.style.opacity = '0.7';
@@ -248,6 +263,7 @@ document.addEventListener("DOMContentLoaded", () => {
     if (downloadBtn) {
         downloadBtn.addEventListener('click', () => {
             if (!lastScanResult) return;
+            if (window.speak) window.speak("Exporting intelligence report.");
             const r = lastScanResult;
             let report = `GRACE-X GUARDIAN — THREAT ASSESSMENT REPORT\n`;
             report += `${'═'.repeat(50)}\n`;
@@ -289,6 +305,8 @@ document.addEventListener("DOMContentLoaded", () => {
         checkPwdBtn.addEventListener('click', async () => {
             const password = passwordInput.value;
             if (!password) return;
+
+            if (window.speak) window.speak("Auditing password strength against neural databases.");
 
             checkPwdBtn.innerHTML = '<span class="spinner"></span> Analysing...';
 
@@ -353,6 +371,8 @@ document.addEventListener("DOMContentLoaded", () => {
             const email = breachEmail.value.trim();
             if (!email) return;
 
+            if (window.speak) window.speak("Scanning deep web databases for compromised credentials.");
+
             checkBreachBtn.innerHTML = '<span class="spinner"></span> Scanning...';
 
             try {
@@ -409,6 +429,8 @@ document.addEventListener("DOMContentLoaded", () => {
         footprintBtn.addEventListener('click', async () => {
             const query = footprintQuery.value.trim();
             if (!query) return;
+
+            if (window.speak) window.speak("Executing open source intelligence footprint scan.");
 
             footprintBtn.innerHTML = '<span class="spinner"></span> Scanning...';
 
@@ -490,6 +512,8 @@ document.addEventListener("DOMContentLoaded", () => {
                 dataMinimisation: document.getElementById('q-dataMinimisation')?.checked,
             };
 
+            if (window.speak) window.speak("Evaluating comprehensive security posture.");
+
             calcScoreBtn.innerHTML = '<span class="spinner"></span> Calculating...';
 
             try {
@@ -565,6 +589,9 @@ document.addEventListener("DOMContentLoaded", () => {
         scanHeadersBtn.addEventListener('click', async () => {
             const url = headerInput.value.trim();
             if (!url) return;
+
+            if (window.speak) window.speak("Analyzing HTTP security headers of target domain.");
+
             scanHeadersBtn.innerHTML = '<span class="spinner"></span> Scanning...';
             try {
                 const res = await fetch('/api/analyze-headers', {
@@ -624,6 +651,9 @@ document.addEventListener("DOMContentLoaded", () => {
         scanIpBtn.addEventListener('click', async () => {
             const ip = ipInput.value.trim();
             if (!ip) return;
+
+            if (window.speak) window.speak("Querying global threat intelligence networks for IP address.");
+
             scanIpBtn.innerHTML = '<span class="spinner"></span> Analyzing...';
             try {
                 const res = await fetch('/api/ip-reputation', {
@@ -692,6 +722,8 @@ document.addEventListener("DOMContentLoaded", () => {
         bulkScanBtn.addEventListener('click', async () => {
             const lines = bulkInput.value.split('\n').map(l => l.trim()).filter(l => l.length > 0);
             if (lines.length === 0) return;
+
+            if (window.speak) window.speak("Initiating bulk threat assessment protocol.");
 
             bulkScanBtn.disabled = true;
             bulkScanBtn.innerHTML = '<span class="spinner"></span> Processing...';
@@ -803,6 +835,7 @@ document.addEventListener("DOMContentLoaded", () => {
         clearHistoryBtn.addEventListener('click', () => {
             scanHistory = [];
             renderHistory();
+            if (window.speak) window.speak("Session history cleared.");
         });
     }
 
@@ -810,6 +843,7 @@ document.addEventListener("DOMContentLoaded", () => {
     if (exportHistoryBtn) {
         exportHistoryBtn.addEventListener('click', () => {
             if (scanHistory.length === 0) return alert('No history to export.');
+            if (window.speak) window.speak("Exporting full session scan history.");
             let report = `GRACE-X GUARDIAN — SCAN HISTORY EXPORT\n${'═'.repeat(50)}\n\n`;
             scanHistory.forEach((item, i) => {
                 report += `Scan #${i + 1} — ${new Date(item.timestamp).toLocaleString()}\n`;
@@ -837,6 +871,8 @@ document.addEventListener("DOMContentLoaded", () => {
         scanEmailBtn.addEventListener('click', () => {
             const headers = emailInput.value.trim();
             if (!headers) return;
+
+            if (window.speak) window.speak("Analyzing email headers for spoofing indicators and identity verification.");
 
             scanEmailBtn.innerHTML = '<span class="spinner"></span> Analyzing headers...';
 
@@ -902,6 +938,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     if (auditBrowserBtn && browserResults) {
         auditBrowserBtn.addEventListener('click', () => {
+            if (window.speak) window.speak("Auditing browser configuration for tracking vulnerabilities and privacy leaks.");
             auditBrowserBtn.innerHTML = '<span class="spinner"></span> Auditing...';
 
             setTimeout(() => {
@@ -992,6 +1029,8 @@ document.addEventListener("DOMContentLoaded", () => {
         inspectFileBtn.addEventListener('click', () => {
             if (!selectedFile) return;
 
+            if (window.speak) window.speak("Analyzing file signature to uncover true format and detect malicious disguises.");
+
             inspectFileBtn.innerHTML = '<span class="spinner"></span> Inspecting...';
 
             const reader = new FileReader();
@@ -1078,6 +1117,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     if (generatePassphraseBtn && passphraseOutput && passphraseMeta) {
         generatePassphraseBtn.addEventListener('click', () => {
+            if (window.speak) window.speak("Generating cryptographic human readable passphrase.");
             // Generate 4 random words
             let phraseWords = [];
             for (let i = 0; i < 4; i++) {
@@ -1114,6 +1154,7 @@ document.addEventListener("DOMContentLoaded", () => {
             if (text === '-' || !text) return;
 
             navigator.clipboard.writeText(text).then(() => {
+                if (window.speak) window.speak("Passphrase copied to clipboard.");
                 const originalText = copyPassphraseBtn.textContent;
                 copyPassphraseBtn.textContent = '✅';
                 setTimeout(() => { copyPassphraseBtn.textContent = originalText; }, 2000);
