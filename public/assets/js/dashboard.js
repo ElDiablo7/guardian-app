@@ -1,4 +1,26 @@
 document.addEventListener("DOMContentLoaded", () => {
+    // ── Theme Management ──
+    const themeToggleBtn = document.getElementById('themeToggleBtn');
+
+    // Apply saved theme on load
+    if (localStorage.getItem('guardian_theme') === 'light') {
+        document.body.classList.add('light-theme');
+        if (themeToggleBtn) themeToggleBtn.innerHTML = '🌙 Dark Mode';
+    }
+
+    if (themeToggleBtn) {
+        themeToggleBtn.addEventListener('click', () => {
+            document.body.classList.toggle('light-theme');
+            const isLight = document.body.classList.contains('light-theme');
+
+            // Save preference
+            localStorage.setItem('guardian_theme', isLight ? 'light' : 'dark');
+
+            // Update button text
+            themeToggleBtn.innerHTML = isLight ? '🌙 Dark Mode' : '☀️ Light Mode';
+        });
+    }
+
     // ── Tier & Feature Gating ──
     const features = JSON.parse(sessionStorage.getItem('guardian_features') || '[]');
     const tierName = sessionStorage.getItem('guardian_tier_name') || sessionStorage.getItem('guardian_tier') || 'Unknown';

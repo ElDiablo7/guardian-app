@@ -34,6 +34,27 @@
     --sans: 'Inter', ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;
 }
 
+body.light-theme {
+    --bg0: #f4f7fb;
+    --bg1: #e2e8f0;
+    --text: #1e293b;
+    --muted: #64748b;
+    --cyan: #0284c7;
+    --amber: #d97706;
+    --red: #dc2626;
+    --green: #059669;
+    --purple: #7c3aed;
+    --neon-aura: rgba(2, 132, 199, 0.15);
+    --deep-void: #cbd5e1;
+
+    --card: rgba(255, 255, 255, 0.85);
+    --glass: rgba(255, 255, 255, 0.75);
+    --border: rgba(148, 163, 184, 0.4);
+    --border-hover: rgba(2, 132, 199, 0.4);
+    --shadow: 0 8px 30px rgba(0, 0, 0, 0.08);
+    --shadow-glow: 0 16px 40px rgba(2, 132, 199, 0.1);
+}
+
 * {
     box-sizing: border-box;
 }
@@ -130,6 +151,10 @@ body {
     z-index: 100;
 }
 
+body.light-theme .topbar {
+    background: rgba(255, 255, 255, 0.9);
+}
+
 .brand {
     display: flex;
     align-items: center;
@@ -185,6 +210,10 @@ body {
     background: rgba(11, 16, 34, .6);
     color: var(--muted);
     letter-spacing: .06em;
+}
+
+body.light-theme .pill {
+    background: rgba(241, 245, 249, 0.8);
 }
 
 .pill.sec {
@@ -731,6 +760,14 @@ footer {
 /* ═══════════════════════════════════════════
    APP DASHBOARD STYLES
    ═══════════════════════════════════════════ */
+
+/* ── Dashboard Grid ── */
+.dashboard-grid {
+    display: grid;
+    grid-template-columns: 1fr 300px;
+    gap: 24px;
+    margin-bottom: 24px;
+}
 
 /* ── Tab Bar ── */
 .tab-bar {
@@ -1652,6 +1689,10 @@ textarea:focus {
         position: static;
     }
 
+    .dashboard-grid {
+        grid-template-columns: 1fr;
+    }
+
     .pricing-grid {
         grid-template-columns: 1fr;
         max-width: 400px;
@@ -1869,6 +1910,10 @@ textarea:focus {
     border-color: rgba(189, 83, 255, .4);
     background: linear-gradient(180deg, rgba(15, 22, 48, .95), rgba(25, 12, 45, .9));
     box-shadow: 0 0 40px rgba(189, 83, 255, .08);
+}
+
+body.light-theme .topbar--commander {
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.95), rgba(248, 250, 252, 0.9));
 }
 
 /* ── Tier Pill Variants ── */
