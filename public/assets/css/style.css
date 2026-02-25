@@ -63,6 +63,7 @@ html,
 body {
     overflow-x: hidden;
     width: 100%;
+    max-width: 100vw;
 }
 
 body {
@@ -769,10 +770,11 @@ footer {
 
 /* ── Dashboard Grid ── */
 .dashboard-grid {
-    display: grid;
-    grid-template-columns: 1fr 300px;
+    display: flex;
+    flex-direction: column;
     gap: 24px;
     margin-bottom: 24px;
+    width: 100%;
 }
 
 /* ── Tab Bar ── */
@@ -1688,7 +1690,7 @@ textarea:focus {
 }
 
 /* ── Responsive ── */
-@media (max-width: 768px) {
+@media (max-width: 1024px) {
     .topbar {
         flex-direction: column;
         text-align: center;
