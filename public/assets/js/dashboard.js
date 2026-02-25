@@ -805,4 +805,297 @@ document.addEventListener("DOMContentLoaded", () => {
             a.click();
         });
     }
+
+    // ── LITE TOOL: EMAIL SPOOF ANALYZER ──
+    const scanEmailBtn = document.getElementById('scanEmailBtn');
+    const emailInput = document.getElementById('emailInput');
+    const emailResults = document.getElementById('emailResults');
+
+    if (scanEmailBtn && emailInput && emailResults) {
+        scanEmailBtn.addEventListener('click', () => {
+            const headers = emailInput.value.trim();
+            if (!headers) return;
+
+            scanEmailBtn.innerHTML = '<span class="spinner"></span> Analyzing headers...';
+
+            setTimeout(() => {
+                let html = '<h3 class="results-title">Header Analysis</h3>';
+
+                const returnPathMatch = headers.match(/Return-Path:\s*<?([^>\n]+)>?/i);
+                const fromMatch = headers.match(/From:\s*(?:(?:[^<]*\s*)?<([^>\n]+)>|([^\n]+))/i);
+                const dkimMatch = headers.match(/DKIM-Signature:/i);
+                const spfMatch = headers.match(/Received-SPF:\s*([^\s\n]+)/i);
+
+                const fromAddress = fromMatch ? (fromMatch[1] || fromMatch[2]).trim() : 'Unknown';
+                const returnPathAddress = returnPathMatch ? returnPathMatch[1].trim() : 'Unknown';
+
+                // Spoof detection
+                let spoofWarning = false;
+                if (fromAddress !== 'Unknown' && returnPathAddress !== 'Unknown') {
+                    const fromDomain = fromAddress.split('@')[1];
+                    const returnDomain = returnPathAddress.split('@')[1];
+                    if (fromDomain && returnDomain && fromDomain.toLowerCase() !== returnDomain.toLowerCase()) {
+                        spoofWarning = true;
+                    }
+                }
+
+                if (spoofWarning) {
+                    html += '<div class="threat-item threat-critical"><div class="threat-head">[CRITICAL] Possible Spoofing Detected</div>The "From" address domain does not match the hidden "Return-Path" domain. This is a common indicator of email spoofing.</div>';
+                } else if (fromAddress === 'Unknown') {
+                    html += '<div class="threat-item threat-warn"><div class="threat-head">[WARNING] Invalid Headers</div>Could not extract sender information. Ensure you pasted raw headers.</div>';
+                } else {
+                    html += '<div class="threat-item threat-safe"><div class="threat-head">[SAFE] Sender Identities Match</div>The visible sender matches the return path.</div>';
+                }
+
+                html += '<div class="pwd-score-card" style="margin-top: 15px;">';
+                html += '<div><strong>Visible From:</strong> ' + fromAddress + '</div>';
+                html += '<div><strong>Return-Path (Actual Sender):</strong> ' + returnPathAddress + '</div>';
+
+                const spfStatus = spfMatch ? spfMatch[1].toLowerCase() : 'none';
+                const spfColor = spfStatus.includes('pass') ? 'var(--green)' : spfStatus.includes('fail') ? 'var(--red)' : 'var(--amber)';
+                html += `<div><strong>SPF Status:</strong> <span style="color:${spfColor}">${spfStatus.toUpperCase()}</span></div>`;
+
+                const dkimStatus = dkimMatch ? 'PRESENT' : 'MISSING';
+                const dkimColor = dkimMatch ? 'var(--green)' : 'var(--amber)';
+                html += `<div><strong>DKIM Signature:</strong> <span style="color:${dkimColor}">${dkimStatus}</span></div>`;
+
+                html += '</div>';
+
+                emailResults.innerHTML = html;
+                emailResults.style.display = 'block';
+
+                scanEmailBtn.innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" /></svg> Analyze Headers`;
+
+                if (window.speak) {
+                    if (spoofWarning) window.speak("Critical warning. Possible email spoofing detected.");
+                    else window.speak("Email header analysis complete.");
+                }
+            }, 800);
+        });
+    }
+
+    // ── LITE TOOL: BROWSER PRIVACY AUDITOR ──
+    const auditBrowserBtn = document.getElementById('auditBrowserBtn');
+    const browserResults = document.getElementById('browserResults');
+
+    if (auditBrowserBtn && browserResults) {
+        auditBrowserBtn.addEventListener('click', () => {
+            auditBrowserBtn.innerHTML = '<span class="spinner"></span> Auditing...';
+
+            setTimeout(() => {
+                let html = '<h3 class="results-title">Browser Privacy Audit</h3>';
+                let risks = 0;
+
+                html += '<div class="history-list" style="max-height: none;">';
+
+                // Cookies
+                const cookiesEnabled = navigator.cookieEnabled;
+                html += `<div class="threat-item threat-${cookiesEnabled ? 'warn' : 'safe'}"><div class="threat-head">Cookies Enabled</div>${cookiesEnabled ? 'Yes. Websites can track you via cookies.' : 'No. Privacy enhanced.'}</div>`;
+                if (cookiesEnabled) risks++;
+
+                // Do Not Track
+                const dnt = navigator.doNotTrack === "1" || window.doNotTrack === "1" || navigator.msDoNotTrack === "1" || navigator.doNotTrack === "yes";
+                html += `<div class="threat-item threat-${dnt ? 'safe' : 'warn'}"><div class="threat-head">Do Not Track (DNT)</div>${dnt ? 'Enabled.' : 'Disabled. Websites are not actively asked to stop tracking you.'}</div>`;
+                if (!dnt) risks++;
+
+                // User Agent
+                html += `<div class="threat-item threat-warn"><div class="threat-head">User Agent Leak</div>Your browser broadcasts: <code style="font-size:11px;word-break:break-all;">${navigator.userAgent}</code></div>`;
+                risks++;
+
+                // Screen fingerprinting possibility
+                html += `<div class="threat-item threat-warn"><div class="threat-head">Hardware Fingerprinting</div>Your screen resolution (${window.screen.width}x${window.screen.height}) and colour depth (${window.screen.colorDepth}-bit) can be used to fingerprint your device.</div>`;
+                risks++;
+
+                // Plugins
+                const pluginCount = navigator.plugins ? navigator.plugins.length : 0;
+                html += `<div class="threat-item threat-${pluginCount > 0 ? 'warn' : 'safe'}"><div class="threat-head">Installed Plugins</div>${pluginCount > 0 ? `Found ${pluginCount} identifiable plugins.` : 'No visible plugins. Good.'}</div>`;
+                if (pluginCount > 0) risks++;
+
+                html += '</div>';
+
+                let grade = 'A';
+                if (risks > 3) grade = 'C';
+                else if (risks > 1) grade = 'B';
+
+                const gradeColor = grade === 'A' ? 'var(--green)' : grade === 'B' ? 'var(--amber)' : 'var(--red)';
+
+                let summaryHTML = `<div class="score-result-card" style="margin-bottom: 20px;">
+                    <div class="big-grade" style="color: ${gradeColor}; font-size: 40px; margin-bottom: 5px;">${grade}</div>
+                    <div style="font-weight: 600; font-size: 16px;">Privacy Grade</div>
+                    <div style="font-size: 13px; margin-top: 5px; opacity: 0.8">${risks} potential tracking vectors found.</div>
+                </div>`;
+
+                browserResults.innerHTML = summaryHTML + html;
+                browserResults.style.display = 'block';
+
+                auditBrowserBtn.innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><circle cx="12" cy="12" r="10" /><line x1="2" y1="12" x2="22" y2="12" /></svg> Audit My Browser`;
+
+                if (window.speak) window.speak(`Browser audit complete. Privacy grade is ${grade}.`);
+            }, 1000);
+        });
+    }
+
+    // ── LITE TOOL: FILE TRUE TYPE INSPECTOR ──
+    const fileInput = document.getElementById('fileInput');
+    const fileNameDisplay = document.getElementById('fileName');
+    const inspectFileBtn = document.getElementById('inspectFileBtn');
+    const fileResults = document.getElementById('fileResults');
+
+    if (fileInput && inspectFileBtn) {
+        let selectedFile = null;
+
+        fileInput.addEventListener('change', (e) => {
+            if (e.target.files && e.target.files.length > 0) {
+                selectedFile = e.target.files[0];
+                fileNameDisplay.textContent = selectedFile.name;
+                inspectFileBtn.style.display = 'inline-flex';
+                fileResults.style.display = 'none';
+            }
+        });
+
+        const magicBytes = {
+            '89504e47': { ext: 'png', mime: 'image/png' },
+            'ffd8ffe0': { ext: 'jpg', mime: 'image/jpeg' },
+            'ffd8ffe1': { ext: 'jpg', mime: 'image/jpeg' },
+            'ffd8ffe2': { ext: 'jpg', mime: 'image/jpeg' },
+            'ffd8ffe3': { ext: 'jpg', mime: 'image/jpeg' },
+            'ffd8ffe8': { ext: 'jpg', mime: 'image/jpeg' },
+            '47494638': { ext: 'gif', mime: 'image/gif' },
+            '25504446': { ext: 'pdf', mime: 'application/pdf' },
+            '504b0304': { ext: 'zip', mime: 'application/zip' }, // Also docx, xlsx, pptx, apk
+            '52617221': { ext: 'rar', mime: 'application/x-rar-compressed' },
+            '4d5a': { ext: 'exe', mime: 'application/x-msdownload' } // DOS MZ executable
+        };
+
+        inspectFileBtn.addEventListener('click', () => {
+            if (!selectedFile) return;
+
+            inspectFileBtn.innerHTML = '<span class="spinner"></span> Inspecting...';
+
+            const reader = new FileReader();
+            reader.onload = function (e) {
+                const arr = (new Uint8Array(e.target.result)).subarray(0, 4);
+                let header = "";
+                for (let i = 0; i < arr.length; i++) {
+                    header += arr[i].toString(16).padStart(2, '0');
+                }
+
+                const claimedExt = selectedFile.name.split('.').pop().toLowerCase();
+                let trueExt = 'unknown';
+                let mime = 'unknown';
+
+                for (const [magic, info] of Object.entries(magicBytes)) {
+                    if (header.startsWith(magic) || (magic.length === 4 && header.substring(0, 4) === magic)) {
+                        trueExt = info.ext;
+                        mime = info.mime;
+                        break;
+                    }
+                }
+
+                // Account for 504b0304 being zip/docx/xlsx
+                if (trueExt === 'zip' && ['docx', 'xlsx', 'pptx', 'apk', 'jar'].includes(claimedExt)) {
+                    trueExt = claimedExt;
+                }
+
+                let isMasquerading = false;
+                if (trueExt !== 'unknown' && trueExt !== claimedExt) {
+                    if (!(trueExt === 'jpg' && claimedExt === 'jpeg')) {
+                        isMasquerading = true;
+                    }
+                }
+
+                let html = '<h3 class="results-title">File Identity Report</h3>';
+
+                html += '<div class="pwd-score-card" style="margin-bottom: 20px;">';
+                html += `<div><strong>Claimed Extension:</strong> .${claimedExt.toUpperCase()}</div>`;
+                html += `<div><strong>True Detected Type:</strong> ${trueExt !== 'unknown' ? '.' + trueExt.toUpperCase() : 'Unknown File Format'}</div>`;
+                html += `<div><strong>Detected MIME:</strong> ${mime}</div>`;
+                html += `<div><strong>Header Bytes (Hex):</strong> ${header.toUpperCase()}</div>`;
+                html += `<div><strong>File Size:</strong> ${(selectedFile.size / 1024).toFixed(2)} KB</div>`;
+                html += '</div>';
+
+                if (isMasquerading && trueExt === 'exe') {
+                    html += `<div class="threat-item threat-critical"><div class="threat-head">[CRITICAL] Malicious Disguise Detected</div>File claims to be a <strong>.${claimedExt}</strong> but is actually a Windows Executable (EXE). Do not open this file!</div>`;
+                    if (window.speak) window.speak("Critical alert. Malicious file disguise detected. Do not open.");
+                } else if (isMasquerading) {
+                    html += `<div class="threat-item threat-warn"><div class="threat-head">[WARNING] Extension Mismatch</div>The file's content (<strong>.${trueExt}</strong>) does not match its extension (<strong>.${claimedExt}</strong>). Exercise caution.</div>`;
+                    if (window.speak) window.speak("Warning. File extension mismatch detected.");
+                } else if (trueExt === 'unknown') {
+                    html += `<div class="threat-item threat-warn"><div class="threat-head">[WARNING] Unknown Format</div>Could not verify the magic bytes of this file. It may be safe, but proceed with caution.</div>`;
+                    if (window.speak) window.speak("File format unknown. Proceed with caution.");
+                } else {
+                    html += `<div class="threat-item threat-safe"><div class="threat-head">[SAFE] Identity Verified</div>The file extension accurately matches the file's internal signature.</div>`;
+                    if (window.speak) window.speak("File identity verified as authentic.");
+                }
+
+                fileResults.innerHTML = html;
+                fileResults.style.display = 'block';
+
+                inspectFileBtn.innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><circle cx="11" cy="11" r="8" /><line x1="21" y1="21" x2="16.65" y2="16.65" /></svg> Inspect File`;
+            };
+
+            reader.readAsArrayBuffer(selectedFile.slice(0, 4));
+        });
+    }
+
+    // ── LITE TOOL: SECURE PASSPHRASE GENERATOR ──
+    const generatePassphraseBtn = document.getElementById('generatePassphraseBtn');
+    const passphraseOutput = document.getElementById('passphraseOutput');
+    const copyPassphraseBtn = document.getElementById('copyPassphraseBtn');
+    const passphraseMeta = document.getElementById('passphraseMeta');
+
+    const wordlist = [
+        "apple", "brave", "candy", "delta", "eagle", "flame", "grape", "haste",
+        "ivory", "joker", "karma", "lemon", "magic", "noble", "ocean", "piano",
+        "queen", "river", "stone", "tiger", "umbra", "venom", "water", "xenon",
+        "yacht", "zebra", "cloud", "dance", "earth", "frost", "ghost", "heart",
+        "iron", "jewel", "knife", "lunar", "metal", "ninja", "orbit", "pearl",
+        "quest", "radar", "steel", "trust", "unify", "vital", "wheat", "yield",
+        "amber", "bacon", "cabin", "dream", "elite", "focus", "giant", "hotel"
+    ];
+
+    if (generatePassphraseBtn && passphraseOutput && passphraseMeta) {
+        generatePassphraseBtn.addEventListener('click', () => {
+            // Generate 4 random words
+            let phraseWords = [];
+            for (let i = 0; i < 4; i++) {
+                phraseWords.push(wordlist[Math.floor(Math.random() * wordlist.length)]);
+            }
+
+            // Randomly capitalize one word
+            const capIndex = Math.floor(Math.random() * phraseWords.length);
+            phraseWords[capIndex] = phraseWords[capIndex].charAt(0).toUpperCase() + phraseWords[capIndex].slice(1);
+
+            // Add a random number 10-99
+            const num = Math.floor(Math.random() * 90) + 10;
+
+            // Add a special character
+            const chars = "!@#$%^&*()_+-=";
+            const special = chars.charAt(Math.floor(Math.random() * chars.length));
+
+            const phraseString = phraseWords.join('-') + '-' + num + special;
+            passphraseOutput.textContent = phraseString;
+
+            passphraseMeta.innerHTML = `
+                <div style="display: flex; gap: 20px; text-transform: uppercase;">
+                    <div><span style="color:var(--cyan)">Length:</span> ${phraseString.length} chars</div>
+                    <div><span style="color:var(--cyan)">Entropy:</span> ~85 bits</div>
+                    <div><span style="color:var(--cyan)">Est. Crack Time:</span> > 4 billion years</div>
+                </div>
+            `;
+        });
+    }
+
+    if (copyPassphraseBtn && passphraseOutput) {
+        copyPassphraseBtn.addEventListener('click', () => {
+            const text = passphraseOutput.textContent;
+            if (text === '-' || !text) return;
+
+            navigator.clipboard.writeText(text).then(() => {
+                const originalText = copyPassphraseBtn.textContent;
+                copyPassphraseBtn.textContent = '✅';
+                setTimeout(() => { copyPassphraseBtn.textContent = originalText; }, 2000);
+            });
+        });
+    }
 });

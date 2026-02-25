@@ -116,6 +116,40 @@
                         </svg>
                         History
                     </button>
+                    <button class="tab-btn" data-tab="email" data-feature="scan">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16"
+                            height="16">
+                            <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" />
+                            <polyline points="22,6 12,13 2,6" />
+                        </svg>
+                        Email Spoof
+                    </button>
+                    <button class="tab-btn" data-tab="browser" data-feature="scan">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16"
+                            height="16">
+                            <circle cx="12" cy="12" r="10" />
+                            <line x1="2" y1="12" x2="22" y2="12" />
+                            <path
+                                d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z" />
+                        </svg>
+                        Browser Audit
+                    </button>
+                    <button class="tab-btn" data-tab="file" data-feature="scan">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16"
+                            height="16">
+                            <path d="M13 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z" />
+                            <polyline points="13 2 13 9 20 9" />
+                        </svg>
+                        File Inspector
+                    </button>
+                    <button class="tab-btn" data-tab="passphrase" data-feature="scan">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16"
+                            height="16">
+                            <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
+                            <path d="M7 11V7a5 5 0 0 1 10 0v4" />
+                        </svg>
+                        Passphrase Gen
+                    </button>
                 </div>
 
                 <!-- ── SCANNER TAB ── -->
@@ -208,6 +242,108 @@
                         <div class="action-row" style="margin-top: 16px;">
                             <button class="btn" id="clearHistoryBtn">Clear History</button>
                         </div>
+                    </div>
+                </div>
+
+                <!-- ── EMAIL SPOOF TAB ── -->
+                <div class="tab-panel" id="panel-email">
+                    <div class="card app-card glass-card">
+                        <div class="card-head">
+                            <h2>📧 Email Spoof Analyzer</h2>
+                            <div class="card-badge">LITE TOOL</div>
+                        </div>
+                        <p class="card-desc">Paste the raw headers of an email to verify its true sender and
+                            authentication status.</p>
+                        <textarea id="emailInput" placeholder="Paste raw email headers here..."></textarea>
+                        <button class="btn primary" id="scanEmailBtn" style="margin-top: 15px;">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14"
+                                height="14">
+                                <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" />
+                            </svg>
+                            Analyze Headers
+                        </button>
+                        <div id="emailResults" style="display: none; margin-top: 20px;"></div>
+                    </div>
+                </div>
+
+                <!-- ── BROWSER AUDIT TAB ── -->
+                <div class="tab-panel" id="panel-browser">
+                    <div class="card app-card glass-card">
+                        <div class="card-head">
+                            <h2>🕵️ Browser Privacy Auditor</h2>
+                            <div class="card-badge">LITE TOOL</div>
+                        </div>
+                        <p class="card-desc">Check what information your browser is passively leaking to websites you
+                            visit.</p>
+                        <button class="btn primary" id="auditBrowserBtn">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14"
+                                height="14">
+                                <circle cx="12" cy="12" r="10" />
+                                <line x1="2" y1="12" x2="22" y2="12" />
+                            </svg>
+                            Audit My Browser
+                        </button>
+                        <div id="browserResults" style="display: none; margin-top: 20px;"></div>
+                    </div>
+                </div>
+
+                <!-- ── FILE INSPECTOR TAB ── -->
+                <div class="tab-panel" id="panel-file">
+                    <div class="card app-card glass-card">
+                        <div class="card-head">
+                            <h2>📁 File 'True Type' Inspector</h2>
+                            <div class="card-badge">LITE TOOL</div>
+                        </div>
+                        <p class="card-desc">Select or drop a file to analyze its "magic bytes" and determine its true
+                            format. Your file never leaves your device.</p>
+                        <div class="input-row" style="align-items: center;">
+                            <input type="file" id="fileInput" style="display: none;">
+                            <label for="fileInput" class="btn">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14"
+                                    height="14">
+                                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                                    <polyline points="17 8 12 3 7 8" />
+                                    <line x1="12" y1="3" x2="12" y2="15" />
+                                </svg>
+                                Select File
+                            </label>
+                            <span id="fileName" style="margin-left: 10px; font-size: 14px; opacity: 0.7;">No file
+                                selected</span>
+                        </div>
+                        <button class="btn primary" id="inspectFileBtn" style="margin-top: 15px; display: none;">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14"
+                                height="14">
+                                <circle cx="11" cy="11" r="8" />
+                                <line x1="21" y1="21" x2="16.65" y2="16.65" />
+                            </svg>
+                            Inspect File
+                        </button>
+                        <div id="fileResults" style="display: none; margin-top: 20px;"></div>
+                    </div>
+                </div>
+
+                <!-- ── PASSPHRASE GEN TAB ── -->
+                <div class="tab-panel" id="panel-passphrase">
+                    <div class="card app-card glass-card">
+                        <div class="card-head">
+                            <h2>🔐 Secure Passphrase Generator</h2>
+                            <div class="card-badge">LITE TOOL</div>
+                        </div>
+                        <p class="card-desc">Generate a secure, memorable passphrase that is extremely resistant to
+                            brute-force attacks.</p>
+                        <div class="input-row" style="align-items: center; margin-bottom: 15px;">
+                            <span id="passphraseOutput"
+                                style="font-family: var(--mono); font-size: 20px; font-weight: bold; padding: 10px 15px; background: rgba(0,0,0,0.2); border-radius: 4px; flex-grow: 1; letter-spacing: 1px;">-</span>
+                            <button class="btn" id="copyPassphraseBtn" title="Copy to clipboard">📋</button>
+                        </div>
+                        <button class="btn primary" id="generatePassphraseBtn">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14"
+                                height="14">
+                                <path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.29-10.27l-3.11 3.11" />
+                            </svg>
+                            Generate New Passphrase
+                        </button>
+                        <div id="passphraseMeta" style="margin-top: 20px; font-size: 13px; opacity: 0.8;"></div>
                     </div>
                 </div>
 
