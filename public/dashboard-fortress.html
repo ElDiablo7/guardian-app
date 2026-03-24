@@ -48,12 +48,25 @@
     </script>
   <!-- Standardized SEO Metadata -->
               <!-- Standardized SEO Metadata -->
+              <!-- Standardized SEO Metadata & Performance -->
+                          <!-- Standardized SEO Metadata & Performance -->
+                          <!-- Standardized SEO Metadata & Performance -->
+                          <!-- Standardized SEO Metadata & Performance -->
+                          <!-- Standardized SEO Metadata & Performance -->
+                          <!-- Standardized SEO Metadata & Performance -->
+                          <!-- Standardized SEO Metadata & Performance -->
+  <link rel="preload" href="https://grx-website.onrender.com/assets/fonts/Inter-VariableFont_slnt,wght.ttf" as="font" type="font/ttf" crossorigin="anonymous" />
   <link rel="canonical" href="https://grx-website.onrender.com/guardian-app/public/dashboard-fortress.html" />
   <meta property="og:type" content="website" />
   <meta property="og:url" content="https://grx-website.onrender.com/guardian-app/public/dashboard-fortress.html" />
   <meta property="og:title" content="GRACE-X Guardian • Fortress Dashboard" />
   <meta property="og:description" content="Sovereign AI Operating System" />
   <meta property="og:image" content="https://grx-website.onrender.com/assets/img/ultimate.png" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:url" content="https://grx-website.onrender.com/guardian-app/public/dashboard-fortress.html" />
+  <meta name="twitter:title" content="GRACE-X Guardian • Fortress Dashboard" />
+  <meta name="twitter:description" content="Sovereign AI Operating System" />
+  <meta name="twitter:image" content="https://grx-website.onrender.com/assets/img/ultimate.png" />
 </head>
 
 <body>
@@ -65,7 +78,7 @@
         <div class="brand">
             <div class="mark mark--cyan">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="20" height="20"
-                    style="color: var(--cyan);">
+                    class="gx-style-1020847521">
                     <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
                 </svg>
             </div>
@@ -187,7 +200,7 @@
                                 Run Guardian Analysis
                             </button>
                             <button class="btn" id="clearBtn">Clear Sandbox</button>
-                            <button class="btn" id="downloadReportBtn" style="display: none;">
+                            <button class="btn gx-style-916103579" id="downloadReportBtn">
                                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14"
                                     height="14">
                                     <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
@@ -197,14 +210,14 @@
                                 Export Report
                             </button>
                         </div>
-                        <div id="threatScore" class="threat-score-bar" style="display: none;">
+                        <div id="threatScore" class="threat-score-bar gx-style-916103579">
                             <div class="score-label">THREAT LEVEL</div>
                             <div class="score-track">
                                 <div class="score-fill" id="scoreFill"></div>
                             </div>
                             <div class="score-value" id="scoreValue">0</div>
                         </div>
-                        <div id="results" style="display: none;">
+                        <div id="results" class="gx-style-916103579">
                             <h3 class="results-title">Intelligence Report</h3>
                             <div id="threatLog"></div>
                             <div id="actionPlan" class="actions-box"></div>
@@ -234,7 +247,7 @@
                             </svg>
                             Analyse Password
                         </button>
-                        <div id="pwdResults" style="display: none;">
+                        <div id="pwdResults" class="gx-style-916103579">
                             <div class="pwd-score-card" id="pwdScoreCard">
                                 <div class="pwd-rating" id="pwdRating">—</div>
                                 <div class="pwd-bar-track">
@@ -273,7 +286,7 @@
                                 Scan Deep Web
                             </button>
                         </div>
-                        <div id="breachResults" style="display: none;"></div>
+                        <div id="breachResults" class="gx-style-916103579"></div>
                     </div>
                 </div>
 
@@ -287,14 +300,14 @@
                         <p class="card-desc">Paste the raw headers of an email to verify its true sender and
                             authentication status.</p>
                         <textarea id="emailInput" placeholder="Paste raw email headers here..."></textarea>
-                        <button class="btn primary" id="scanEmailBtn" style="margin-top: 15px;">
+                        <button class="btn primary gx-style-1512571469" id="scanEmailBtn">
                             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14"
                                 height="14">
                                 <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" />
                             </svg>
                             Analyze Headers
                         </button>
-                        <div id="emailResults" style="display: none; margin-top: 20px;"></div>
+                        <div id="emailResults" class="gx-style-1776133140"></div>
                     </div>
                 </div>
 
@@ -315,7 +328,7 @@
                             </svg>
                             Audit My Browser
                         </button>
-                        <div id="browserResults" style="display: none; margin-top: 20px;"></div>
+                        <div id="browserResults" class="gx-style-1776133140"></div>
                     </div>
                 </div>
 
@@ -328,8 +341,8 @@
                         </div>
                         <p class="card-desc">Select or drop a file to analyze its "magic bytes" and determine its true
                             format. Your file never leaves your device.</p>
-                        <div class="input-row" style="align-items: center;">
-                            <input type="file" id="fileInput" style="display: none;">
+                        <div class="input-row gx-style-222765912">
+                            <input type="file" id="fileInput" class="gx-style-916103579">
                             <label for="fileInput" class="btn">
                                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14"
                                     height="14">
@@ -339,10 +352,10 @@
                                 </svg>
                                 Select File
                             </label>
-                            <span id="fileName" style="margin-left: 10px; font-size: 14px; opacity: 0.7;">No file
+                            <span id="fileName" class="gx-style-1831848566">No file
                                 selected</span>
                         </div>
-                        <button class="btn primary" id="inspectFileBtn" style="margin-top: 15px; display: none;">
+                        <button class="btn primary gx-style-1687449512" id="inspectFileBtn">
                             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14"
                                 height="14">
                                 <circle cx="11" cy="11" r="8" />
@@ -350,7 +363,7 @@
                             </svg>
                             Inspect File
                         </button>
-                        <div id="fileResults" style="display: none; margin-top: 20px;"></div>
+                        <div id="fileResults" class="gx-style-1776133140"></div>
                     </div>
                 </div>
 
@@ -363,9 +376,9 @@
                         </div>
                         <p class="card-desc">Generate a secure, memorable passphrase that is extremely resistant to
                             brute-force attacks.</p>
-                        <div class="input-row" style="align-items: center; margin-bottom: 15px;">
+                        <div class="input-row gx-style-513586487">
                             <span id="passphraseOutput"
-                                style="font-family: var(--mono); font-size: 20px; font-weight: bold; padding: 10px 15px; background: rgba(0,0,0,0.2); border-radius: 4px; flex-grow: 1; letter-spacing: 1px; word-break: break-all;">-</span>
+                                class="gx-style-982090226">-</span>
                             <button class="btn" id="copyPassphraseBtn" title="Copy to clipboard">📋</button>
                         </div>
                         <button class="btn primary" id="generatePassphraseBtn">
@@ -375,7 +388,7 @@
                             </svg>
                             Generate New Passphrase
                         </button>
-                        <div id="passphraseMeta" style="margin-top: 20px; font-size: 13px; opacity: 0.8;"></div>
+                        <div id="passphraseMeta" class="gx-style-1190246203"></div>
                     </div>
                 </div>
 
@@ -391,7 +404,7 @@
                         <div id="historyList">
                             <div class="empty-state">No scan history yet. Run a threat scan to get started.</div>
                         </div>
-                        <div class="action-row" style="margin-top: 16px;">
+                        <div class="action-row gx-style-1512541678">
                             <button class="btn" id="clearHistoryBtn">Clear History</button>
                             <button class="btn" id="exportHistoryBtn">Export All</button>
                         </div>
@@ -401,13 +414,13 @@
             </div> <!-- close main-column -->
 
             <aside class="sidebar-column">
-                <div class="card glass-card neural-pulse" style="margin-bottom: 24px;">
+                <div class="card glass-card neural-pulse gx-style-417297439">
                     <div class="card-head">
                         <h2>SYSTEM VITALITY</h2>
                         <div class="card-badge">LIVE</div>
                     </div>
                     <div id="healthVisualizer" class="health-visualizer"></div>
-                    <div style="text-align: center; font-family: var(--mono); font-size: 10px; color: var(--green);">
+                    <div class="gx-style-1989738507">
                         FORTRESS NODE: REINFORCED
                     </div>
                 </div>
